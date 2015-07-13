@@ -13,15 +13,14 @@ class Imu {
   Imu();
   ~Imu();
 
-  double GetHeading();
-  void Update();
-  Vector GetOrientation();
+  void Update(Orientation& out);
+  void Update(ImuData& out);
  private:
-  static const double kMagnetometerXOffset = 25; // in uT
-  static const double kMagnetometerYOffset = 10; // in uT
-  static const double kMagnetometerZOffset = -5; // in uT:
-  static const double kMagneticDeclination = -0.20624; // in radians
-  static const double kGyroscopeConversionFactor = 8.75; // in mdps/LSB
+  static const float kMagnetometerXOffset = 25; // in uT
+  static const float kMagnetometerYOffset = 10; // in uT
+  static const float kMagnetometerZOffset = -5; // in uT:
+  static const float kMagneticDeclination = -0.20624; // in radians
+  static const float kGyroscopeConversionFactor = 0.0001527; // in (rad/s)/LSB
 
   Adafruit_ADXL345_Unified accel_ = Adafruit_ADXL345_Unified(12345);
   sensors_event_t accel_event_;

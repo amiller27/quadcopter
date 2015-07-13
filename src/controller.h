@@ -8,7 +8,9 @@ class Controller {
   Controller();
   ~Controller();
 
-  void Update(/* we will need a parameter here, some kind of orientation */);
+  void Update(Orientation& target);
+ private:
+  Orientation current_orientation_;
 };
 
 #endif
