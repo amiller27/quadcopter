@@ -1,6 +1,8 @@
 #ifndef QUADCOPTER_UTIL_H_
 #define QUADCOPTER_UTIL_H_
 
+#include "math.h"
+
 float sin(float);
 
 class Vector {
@@ -13,24 +15,6 @@ class Vector {
   ~Vector();
 
   float GetLength();
-};
-
-struct GpsLocation {
-  float latitude = 0;
-  float longitude = 0;
-};
-
-struct Orientation {
-  float pitch = 0;
-  float roll = 0;
-  float heading = 0;
-};
-
-struct ImuData {
-  Orientation orientation;
-  float pressure;
-  float temperature;
-  float altitude;
 };
 
 class Quaternion {
@@ -49,6 +33,10 @@ class Quaternion {
   const Quaternion operator*(const Quaternion& other) const {
     return Quaternion(*this) *= other;
   }
+};
+
+struct Orientation {
+  // TBD
 };
 
 #endif

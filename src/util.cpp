@@ -7,8 +7,8 @@ float sin(float x) {
 
 Vector::Vector(float x, float y, float z) : x_(x), y_(y), z_(z) {}
 
-double Vector::GetLength() {
-  return sqrt((x * x) + (y * y) + (z * z));
+float Vector::GetLength() {
+  return sqrt((x_ * x_) + (y_ * y_) + (z_ * z_));
 }
 
 Quaternion::Quaternion(float a, float b, float c, float d)
@@ -26,9 +26,9 @@ Quaternion::Quaternion(Vector& v, float theta) {
   d_ = v.z_ * sin_half_theta;
 }
 
-Quaternion& Quaternion::operator+=(const Quaternion& rhs) {
-  a = (a * rhs.a) - (b * rhs.b) - (c * rhs.c) - (d * rhs.d);
-  b = (a * rhs.b) + (b * rhs.a) + (c * rhs.d) - (d * rhs.c);
-  c = (a * rhs.c) - (b * rhs.d) + (c * rhs.a) + (d * rhs.b);
-  d = (a * rhs.d) + (b * rhs.c) - (c * rhs.b) + (d * rhs.a);
+Quaternion& Quaternion::operator*=(const Quaternion& rhs) {
+  a_ = (a_ * rhs.a_) - (b_ * rhs.b_) - (c_ * rhs.c_) - (d_ * rhs.d_);
+  b_ = (a_ * rhs.b_) + (b_ * rhs.a_) + (c_ * rhs.d_) - (d_ * rhs.c_);
+  c_ = (a_ * rhs.c_) - (b_ * rhs.d_) + (c_ * rhs.a_) + (d_ * rhs.b_);
+  d_ = (a_ * rhs.d_) + (b_ * rhs.c_) - (c_ * rhs.b_) + (d_ * rhs.a_);
 }

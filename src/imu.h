@@ -8,13 +8,21 @@
 
 #include "util.h"
 
+struct ImuData {
+  Orientation orientation;
+  float pressure;
+  float temperature;
+  float altitude;
+};
+
 class Imu {
  public:
   Imu();
   ~Imu();
 
-  void Update(Orientation& out);
-  void Update(ImuData& out);
+  void UpdateOrientation();
+  void GetData(Orientation& out);
+  void GetData(ImuData& out);
  private:
   static const float kMagnetometerXOffset = 25; // in uT
   static const float kMagnetometerYOffset = 10; // in uT
@@ -32,7 +40,8 @@ class Imu {
 
   Adafruit_BMP085_Unified baro_ = Adafruit_BMP085_Unified(12345);
   sensors_event_t baro_event_;
-  float temperature_;
+  
+  Orientation orientation_;
 };
 
 #endif

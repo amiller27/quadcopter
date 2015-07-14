@@ -27,7 +27,7 @@ Imu::Imu() {
   }
 }
 
-void Imu::Update(Orientation& out) {
+void Imu::UpdateOrientation() {
   // has event.acceleration.(x|y|z) in m/s^2
   accel_.getEvent(&accel_event_);
 
@@ -37,27 +37,29 @@ void Imu::Update(Orientation& out) {
   //////////////////  CALCULATE ORIENTATION VECTOR HERE //////////////////
 
   ////////////////////////////////////////////////////////////////////////
+}
 
+void Imu::GetData(Orientation& out) {
   // has event.magnetic.(x|y|z) in uT
   mag_.getEvent(&mag_event_);
 
   //////////////////////// CALCULATE HEADING HERE ////////////////////////
 
   ////////////////////////////////////////////////////////////////////////
-
+  
+  out = orientation_;
 }
 
-void Imu::Update(ImuData& out) {
-  Update(out.orientation);
+void Imu::GetData(ImuData& out) {
+  GetData(out.orientation);
 
-  // has event.pressure
   baro_.getEvent(&baro_event_);
   if (baro_event_.pressure) {
     out.pressure = baro_event_.pressure;
-    baro_.getTemperature(out.temperature);
+    baro_.getTemperature(&(out.temperature));
 
     out.altitude = baro_.pressureToAltitude(SENSORS_PRESSURE_SEALEVELHPA,
-                                              baro_event_.pressure);
+                                            baro_event_.pressure);
   } else {
     // sensor error
   }
