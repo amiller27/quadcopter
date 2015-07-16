@@ -1,0 +1,148 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AddWaypoint	gps_controller.h	/^  void AddWaypoint(GpsLocation waypoint);$/;"	p	language:C++	class:GpsController
+AddWaypoints	gps_controller.h	/^  void AddWaypoints(GpsLocation waypoints[]);$/;"	p	language:C++	class:GpsController
+Controller	controller.cpp	/^Controller::Controller(Imu* imu) : imu_(imu) {}$/;"	f	language:C++	class:Controller
+Controller	controller.h	/^  Controller(Imu* imu);$/;"	p	language:C++	class:Controller
+Controller	controller.h	/^class Controller {$/;"	c	language:C++
+Create	rc_receiver.cpp	/^RcReceiver* RcReceiver::Create() {$/;"	f	language:C++	class:RcReceiver
+Create	rc_receiver.h	/^  static RcReceiver* Create();$/;"	p	language:C++	class:RcReceiver
+GetCommands	rc_receiver.cpp	/^void RcReceiver::GetCommands(RcCommands& out) {$/;"	f	language:C++	class:RcReceiver
+GetCommands	rc_receiver.h	/^  void GetCommands(RcCommands& out);$/;"	p	language:C++	class:RcReceiver
+GetData	imu.cpp	/^void Imu::GetData(ImuData& out) {$/;"	f	language:C++	class:Imu
+GetData	imu.cpp	/^void Imu::GetData(Orientation& out) {$/;"	f	language:C++	class:Imu
+GetData	imu.h	/^  void GetData(ImuData& out);$/;"	p	language:C++	class:Imu
+GetData	imu.h	/^  void GetData(Orientation& out);$/;"	p	language:C++	class:Imu
+GetLength	util.cpp	/^float Vector::GetLength() {$/;"	f	language:C++	class:Vector
+GetLength	util.h	/^  float GetLength();$/;"	p	language:C++	class:Vector
+GetMode	rc_receiver.cpp	/^void RcReceiver::GetMode(OperationMode& out) {$/;"	f	language:C++	class:RcReceiver
+GetMode	rc_receiver.h	/^  void GetMode(OperationMode& out);$/;"	p	language:C++	class:RcReceiver
+GpsController	gps_controller.cpp	/^GpsController::GpsController(Controller* controller)$/;"	f	language:C++	class:GpsController
+GpsController	gps_controller.h	/^  GpsController(Controller* controller);$/;"	p	language:C++	class:GpsController
+GpsController	gps_controller.h	/^class GpsController {$/;"	c	language:C++
+GpsLocation	gps_controller.h	/^struct GpsLocation {$/;"	s	language:C++
+Imu	imu.cpp	/^Imu::Imu() {$/;"	f	language:C++	class:Imu
+Imu	imu.h	/^  Imu();$/;"	p	language:C++	class:Imu
+Imu	imu.h	/^class Imu {$/;"	c	language:C++
+ImuData	imu.h	/^struct ImuData {$/;"	s	language:C++
+Interrupt	rc_receiver.cpp	/^void RcReceiver::Interrupt(int channel) {$/;"	f	language:C++	class:RcReceiver
+Interrupt	rc_receiver.h	/^  void Interrupt(int channel);$/;"	p	language:C++	class:RcReceiver
+Interrupt0	rc_receiver.cpp	/^void RcReceiver::Interrupt0() {$/;"	f	language:C++	class:RcReceiver
+Interrupt0	rc_receiver.h	/^  static void Interrupt0();$/;"	p	language:C++	class:RcReceiver
+Interrupt1	rc_receiver.cpp	/^void RcReceiver::Interrupt1() {$/;"	f	language:C++	class:RcReceiver
+Interrupt1	rc_receiver.h	/^  static void Interrupt1();$/;"	p	language:C++	class:RcReceiver
+Interrupt2	rc_receiver.cpp	/^void RcReceiver::Interrupt2() {$/;"	f	language:C++	class:RcReceiver
+Interrupt2	rc_receiver.h	/^  static void Interrupt2();$/;"	p	language:C++	class:RcReceiver
+Interrupt3	rc_receiver.cpp	/^void RcReceiver::Interrupt3() {$/;"	f	language:C++	class:RcReceiver
+Interrupt3	rc_receiver.h	/^  static void Interrupt3();$/;"	p	language:C++	class:RcReceiver
+Interrupt4	rc_receiver.cpp	/^void RcReceiver::Interrupt4() {$/;"	f	language:C++	class:RcReceiver
+Interrupt4	rc_receiver.h	/^  static void Interrupt4();$/;"	p	language:C++	class:RcReceiver
+Interrupt5	rc_receiver.cpp	/^void RcReceiver::Interrupt5() {$/;"	f	language:C++	class:RcReceiver
+Interrupt5	rc_receiver.h	/^  static void Interrupt5();$/;"	p	language:C++	class:RcReceiver
+Interrupt6	rc_receiver.cpp	/^void RcReceiver::Interrupt6() {$/;"	f	language:C++	class:RcReceiver
+Interrupt6	rc_receiver.h	/^  static void Interrupt6();$/;"	p	language:C++	class:RcReceiver
+Interrupt7	rc_receiver.cpp	/^void RcReceiver::Interrupt7() {$/;"	f	language:C++	class:RcReceiver
+Interrupt7	rc_receiver.h	/^  static void Interrupt7();$/;"	p	language:C++	class:RcReceiver
+OperationMode	rc_receiver.h	/^enum OperationMode {$/;"	g	language:C++
+Orientation	util.h	/^struct Orientation {$/;"	s	language:C++
+QUADCOPTER_CONTROLLER_H_	controller.h	2;"	d	language:C++
+QUADCOPTER_GPS_CONTROLLER_H_	gps_controller.h	2;"	d	language:C++
+QUADCOPTER_IMU_H_	imu.h	2;"	d	language:C++
+QUADCOPTER_RADIO_CONTROLLER_H_	radio_controller.h	2;"	d	language:C++
+QUADCOPTER_RC_RECEIVER_H_	rc_receiver.h	2;"	d	language:C++
+QUADCOPTER_UTIL_H_	util.h	2;"	d	language:C++
+Quaternion	util.cpp	/^Quaternion::Quaternion(Vector& v, float theta) {$/;"	f	language:C++	class:Quaternion
+Quaternion	util.cpp	/^Quaternion::Quaternion(float a, float b, float c, float d)$/;"	f	language:C++	class:Quaternion
+Quaternion	util.h	/^  Quaternion(Vector& v, float theta);$/;"	p	language:C++	class:Quaternion
+Quaternion	util.h	/^  Quaternion(float a, float b, float c, float d);$/;"	p	language:C++	class:Quaternion
+Quaternion	util.h	/^class Quaternion {$/;"	c	language:C++
+RadioController	radio_controller.cpp	/^RadioController::RadioController(Controller* controller,$/;"	f	language:C++	class:RadioController
+RadioController	radio_controller.h	/^  RadioController(Controller* controller, RcReceiver* receiver);$/;"	p	language:C++	class:RadioController
+RadioController	radio_controller.h	/^class RadioController {$/;"	c	language:C++
+RcCommands	rc_receiver.h	/^struct RcCommands {$/;"	s	language:C++
+RcReceiver	rc_receiver.h	/^  RcReceiver() {};$/;"	f	language:C++	class:RcReceiver
+RcReceiver	rc_receiver.h	/^class RcReceiver {$/;"	c	language:C++
+SetInterrupts	rc_receiver.cpp	/^void RcReceiver::SetInterrupts() {$/;"	f	language:C++	class:RcReceiver
+SetInterrupts	rc_receiver.h	/^  void SetInterrupts();$/;"	p	language:C++	class:RcReceiver
+Update	controller.cpp	/^void Controller::Update(\/* type here TBD *\/) {$/;"	f	language:C++	class:Controller
+Update	controller.h	/^  void Update(\/* type here TBD *\/);$/;"	p	language:C++	class:Controller
+Update	gps_controller.cpp	/^void GpsController::Update() {$/;"	f	language:C++	class:GpsController
+Update	gps_controller.h	/^  void Update();$/;"	p	language:C++	class:GpsController
+Update	radio_controller.cpp	/^void RadioController::Update() {$/;"	f	language:C++	class:RadioController
+Update	radio_controller.h	/^  void Update();$/;"	p	language:C++	class:RadioController
+Update	rc_receiver.cpp	/^void RcReceiver::Update() {$/;"	f	language:C++	class:RcReceiver
+Update	rc_receiver.h	/^  void Update();$/;"	p	language:C++	class:RcReceiver
+UpdateOrientation	imu.cpp	/^void Imu::UpdateOrientation() {$/;"	f	language:C++	class:Imu
+UpdateOrientation	imu.h	/^  void UpdateOrientation();$/;"	p	language:C++	class:Imu
+Vector	util.cpp	/^Vector::Vector(float x, float y, float z) : x_(x), y_(y), z_(z) {}$/;"	f	language:C++	class:Vector
+Vector	util.h	/^  Vector(float x, float y, float z);$/;"	p	language:C++	class:Vector
+Vector	util.h	/^class Vector {$/;"	c	language:C++
+a_	util.h	/^  float a_ = 0;$/;"	m	language:C++	class:Quaternion
+accel_	imu.h	/^  Adafruit_ADXL345_Unified accel_ = Adafruit_ADXL345_Unified(12345);$/;"	m	language:C++	class:Imu
+accel_event_	imu.h	/^  sensors_event_t accel_event_;$/;"	m	language:C++	class:Imu
+altitude	imu.h	/^  float altitude;$/;"	m	language:C++	struct:ImuData
+b_	util.h	/^  float b_ = 0;$/;"	m	language:C++	class:Quaternion
+baro_	imu.h	/^  Adafruit_BMP085_Unified baro_ = Adafruit_BMP085_Unified(12345);$/;"	m	language:C++	class:Imu
+baro_event_	imu.h	/^  sensors_event_t baro_event_;$/;"	m	language:C++	class:Imu
+c_	util.h	/^  float c_ = 0;$/;"	m	language:C++	class:Quaternion
+commands_	radio_controller.h	/^  RcCommands commands_;$/;"	m	language:C++	class:RadioController
+controller_	gps_controller.h	/^  Controller* controller_;$/;"	m	language:C++	class:GpsController
+controller_	radio_controller.h	/^  Controller* controller_;$/;"	m	language:C++	class:RadioController
+current_orientation_	controller.h	/^  Orientation current_orientation_;$/;"	m	language:C++	class:Controller
+d_	util.h	/^  float d_ = 0;$/;"	m	language:C++	class:Quaternion
+g_interrupt_receiver	rc_receiver.cpp	/^RcReceiver* g_interrupt_receiver = 0;$/;"	v	language:C++
+gps	rc_receiver.h	/^  gps,$/;"	e	language:C++	enum:OperationMode
+gyro_	imu.h	/^  L3G gyro_ = L3G();$/;"	m	language:C++	class:Imu
+imu_	controller.h	/^  Imu* imu_;$/;"	m	language:C++	class:Controller
+input_start_times_	rc_receiver.h	/^  uint16_t input_start_times_[8];$/;"	m	language:C++	class:RcReceiver
+inputs_	rc_receiver.h	/^  uint16_t inputs_[8];$/;"	m	language:C++	class:RcReceiver
+inputs_shared_	rc_receiver.h	/^  volatile uint16_t inputs_shared_[8];$/;"	m	language:C++	class:RcReceiver
+kGyroscopeConversionFactor	imu.h	/^  static const float kGyroscopeConversionFactor = 0.0001527; \/\/ in (rad\/s)\/LSB$/;"	m	language:C++	class:Imu
+kMagneticDeclination	imu.h	/^  static const float kMagneticDeclination = -0.20624; \/\/ in radians$/;"	m	language:C++	class:Imu
+kMagnetometerXOffset	imu.h	/^  static const float kMagnetometerXOffset = 25; \/\/ in uT$/;"	m	language:C++	class:Imu
+kMagnetometerYOffset	imu.h	/^  static const float kMagnetometerYOffset = 10; \/\/ in uT$/;"	m	language:C++	class:Imu
+kMagnetometerZOffset	imu.h	/^  static const float kMagnetometerZOffset = -5; \/\/ in uT:$/;"	m	language:C++	class:Imu
+latitude	gps_controller.h	/^  float latitude = 0;$/;"	m	language:C++	struct:GpsLocation
+longitude	gps_controller.h	/^  float longitude = 0;$/;"	m	language:C++	struct:GpsLocation
+mag_	imu.h	/^  Adafruit_HMC5883_Unified mag_ = Adafruit_HMC5883_Unified(12345);$/;"	m	language:C++	class:Imu
+mag_event_	imu.h	/^  sensors_event_t mag_event_;$/;"	m	language:C++	class:Imu
+mode	rc_receiver.h	/^    mode = 4,$/;"	e	language:C++	enum:RcReceiver::__anon1
+operator *	util.h	/^  const Quaternion operator*(const Quaternion& other) const {$/;"	f	language:C++	class:Quaternion
+operator *=	util.cpp	/^Quaternion& Quaternion::operator*=(const Quaternion& rhs) {$/;"	f	language:C++	class:Quaternion
+operator *=	util.h	/^  Quaternion& operator*=(const Quaternion& rhs);$/;"	p	language:C++	class:Quaternion
+orientation	imu.h	/^  Orientation orientation;$/;"	m	language:C++	struct:ImuData
+orientation_	imu.h	/^  Orientation orientation_;$/;"	m	language:C++	class:Imu
+pitch	rc_receiver.h	/^    pitch = 1,$/;"	e	language:C++	enum:RcReceiver::__anon1
+pitch	rc_receiver.h	/^  float pitch = 0;$/;"	m	language:C++	struct:RcCommands
+pressure	imu.h	/^  float pressure;$/;"	m	language:C++	struct:ImuData
+rc	rc_receiver.h	/^  rc$/;"	e	language:C++	enum:OperationMode
+receiver_	radio_controller.h	/^  RcReceiver* receiver_;$/;"	m	language:C++	class:RadioController
+roll	rc_receiver.h	/^    roll = 0,$/;"	e	language:C++	enum:RcReceiver::__anon1
+roll	rc_receiver.h	/^  float roll = 0;$/;"	m	language:C++	struct:RcCommands
+sin	util.cpp	/^float sin(float x) {$/;"	f	language:C++
+sin	util.h	/^float sin(float);$/;"	p	language:C++
+temperature	imu.h	/^  float temperature;$/;"	m	language:C++	struct:ImuData
+throttle	rc_receiver.h	/^    throttle = 2,$/;"	e	language:C++	enum:RcReceiver::__anon1
+throttle	rc_receiver.h	/^  float throttle = 0;$/;"	m	language:C++	struct:RcCommands
+unmapped1	rc_receiver.h	/^    unmapped1 = 5,$/;"	e	language:C++	enum:RcReceiver::__anon1
+unmapped2	rc_receiver.h	/^    unmapped2 = 6,$/;"	e	language:C++	enum:RcReceiver::__anon1
+unmapped3	rc_receiver.h	/^    unmapped3 = 7$/;"	e	language:C++	enum:RcReceiver::__anon1
+update_flags_	rc_receiver.h	/^  uint8_t update_flags_ = 0;$/;"	m	language:C++	class:RcReceiver
+update_flags_shared_	rc_receiver.h	/^  volatile uint8_t update_flags_shared_ = 0;$/;"	m	language:C++	class:RcReceiver
+waypoints_	gps_controller.h	/^  GpsLocation waypoints_[];$/;"	m	language:C++	class:GpsController
+x_	util.h	/^  float x_ = 0;$/;"	m	language:C++	class:Vector
+y_	util.h	/^  float y_ = 0;$/;"	m	language:C++	class:Vector
+yaw	rc_receiver.h	/^    yaw = 3,$/;"	e	language:C++	enum:RcReceiver::__anon1
+yaw	rc_receiver.h	/^  float yaw = 0;$/;"	m	language:C++	struct:RcCommands
+z_	util.h	/^  float z_ = 0;$/;"	m	language:C++	class:Vector
+~Controller	controller.h	/^  ~Controller();$/;"	p	language:C++	class:Controller
+~GpsController	gps_controller.h	/^  ~GpsController();$/;"	p	language:C++	class:GpsController
+~Imu	imu.h	/^  ~Imu();$/;"	p	language:C++	class:Imu
+~Quaternion	util.h	/^  ~Quaternion();$/;"	p	language:C++	class:Quaternion
+~RadioController	radio_controller.h	/^  ~RadioController();$/;"	p	language:C++	class:RadioController
+~RcReceiver	rc_receiver.h	/^  ~RcReceiver();$/;"	p	language:C++	class:RcReceiver
+~Vector	util.h	/^  ~Vector();$/;"	p	language:C++	class:Vector
