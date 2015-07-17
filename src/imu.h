@@ -20,15 +20,18 @@ class Imu {
   Imu();
   ~Imu();
 
-  void UpdateOrientation();
-  void GetData(Orientation& out);
-  void GetData(ImuData& out);
+  void GetOrientation(Orientation& out);
+  void GetAllData(ImuData& out);
+
  private:
   static const float kMagnetometerXOffset = 25; // in uT
   static const float kMagnetometerYOffset = 10; // in uT
-  static const float kMagnetometerZOffset = -5; // in uT:
+  static const float kMagnetometerZOffset = -5; // in uT
   static const float kMagneticDeclination = -0.20624; // in radians
   static const float kGyroscopeConversionFactor = 0.0001527; // in (rad/s)/LSB
+  static const float acclelerometerWeight = 0.02; //out of 1
+
+  unsigned long last_sensor_time;
 
   Adafruit_ADXL345_Unified accel_ = Adafruit_ADXL345_Unified(12345);
   sensors_event_t accel_event_;

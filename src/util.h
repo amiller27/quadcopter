@@ -4,6 +4,8 @@
 #include "math.h"
 
 float sin(float);
+float cos(float);
+float tan(float);
 
 class Vector {
  public:
@@ -36,7 +38,10 @@ class Quaternion {
 };
 
 struct Orientation {
-  // TBD
+  //Orientation is calculated as intrinsic Tait-Bryan angles about the..
+  float heading;    // z  axis
+  float attitude;   // y' axis
+  float bank;       // z" axis
 };
 
 #endif

@@ -1,8 +1,18 @@
 #include "util.h"
 
 float sin(float x) {
-  // not yet implemented
-  return 0;
+  // two term power series approximation
+  return x - (x*x*x)/6;
+}
+
+float cos(float x) {
+  // two term power series approximation 
+  return 1 - (x*x)/2;
+}
+
+float tan(float x) {
+  // two term power series approximation 
+  return x + (x*x*x)/3;
 }
 
 Vector::Vector(float x, float y, float z) : x_(x), y_(y), z_(z) {}
