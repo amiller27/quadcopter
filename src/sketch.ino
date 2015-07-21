@@ -23,7 +23,7 @@ void setup() {
 }
 
 void loop() {
-  imu->UpdateOrientation();
+  //imu->UpdateOrientation();
   receiver->Update();
   receiver->GetMode(mode);
   

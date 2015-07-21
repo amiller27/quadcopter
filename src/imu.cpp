@@ -32,24 +32,21 @@ Imu::Imu() {
 }
 
 void Imu::GetOrientation(Orientation& out) {
-  
   ///////////////////////////// ACCELEROMETER ///////////////////////////////
   // has event.acceleration.(x|y|z) in m/s^2
   accel_.getEvent(&accel_event_);
   
-  // compute acceleration norm
-  float g = pow(pow(accel_event_.acceleration.x, 2) +
-		        pow(accel_event_.acceleration.y, 2) +
-				pow(accel_event_.acceleration.z, 2), 0.5); 
+  float accel_bank = asin(pow(pow(accel_event_.acceleration.y, 2) +
+                 pow(accel_event_.acceleration.z, 2), 0.5)) *
+                         radianDegreeConversionFactor;
 
-  float accel_bank = asin(pow(accel_event_.acceleration.y, 2)
-		                 pow(accel_event_.acceleration.z, 2), 0.5);
+  float accel_attitude = asin(pow(pow(accel_event_.acceleration.x, 2) +
+                 pow(accel_event_.acceleration.z, 2), 0.5)) *
+                         radianDegreeConversionFactor;
 
-  float accel_attitude = asin(pow(accel_event_.acceleration.x, 2)
-		                 pow(accel_event_.acceleration.z, 2), 0.5);
-
-  float accel_heading = asin(pow(accel_event_.acceleration.x, 2)
-		                 pow(accel_event_.acceleration.y, 2), 0.5);
+  float accel_heading = asin(pow(pow(accel_event_.acceleration.x, 2) +
+                 pow(accel_event_.acceleration.y, 2), 0.5)) *
+                         radianDegreeConversionFactor;
   ///////////////////////////////////////////////////////////////////////////
 
 
@@ -65,7 +62,7 @@ void Imu::GetOrientation(Orientation& out) {
   ///////////////////////////////////////////////////////////////////////////
   
 
-  Orientation previous_orientation = orientation;
+  Orientation p = orientation_;
 
   float dt = -1 * last_sensor_time;     //// These two lines are designed   ////
   dt += (last_sensor_time = micros());  //// to require only one micro call ////
@@ -74,25 +71,29 @@ void Imu::GetOrientation(Orientation& out) {
 
 
   /////////////////////////////// BANK ///////////////////////////////////////
-  orientation_.bank = (1-acclelerometerWeight) * (previous_orientation_.bank + 
-	kGyroscopeConversionFactor * gyro_.g.x * dt) + acclelerometerWeight * accel_bank;
+  orientation_.bank = (1-acclelerometerWeight) * (p.bank + 
+kGyroscopeConversionFactor * gyro_.g.x * dt) + acclelerometerWeight * accel_bank;
   ////////////////////////////////////////////////////////////////////////////
 
   
   /////////////////////////////// ATTITUDE ///////////////////////////////////
   orientation_.attitude = (1-acclelerometerWeight) * 
-	  (previous_orientation_.attitude + kGyroscopeConversionFactor * dt * 
-	  (gyro_.g.y * cos(previous_orientation.bank) + gyro_.g.z * 
-	  sin(previous_orientation.bank)) + acclelerometerWeight * accel_heading;
+  (p.attitude + kGyroscopeConversionFactor * dt * 
+  (gyro_.g.y * cos(p.bank) + gyro_.g.z * 
+  sin(p.bank))) + acclelerometerWeight * accel_heading;
   ////////////////////////////////////////////////////////////////////////////
  
 
   /////////////////////////////// HEADING ////////////////////////////////////
-  orientation_.heading = atan(//left off here)
+  orientation_.heading = atan2(mag_event_.magnetic.y * cos(p.bank), 
+                               mag_event_.magnetic.x * cos(p.attitude)) *
+                               radianDegreeConversionFactor;
   ////////////////////////////////////////////////////////////////////////////
-  
 
-  *out = orientation_;
+
+  out.bank = orientation_.bank;
+  out.attitude = orientation_.attitude;
+  out.heading = orientation_.heading;
 }
 
 void Imu::GetAllData(ImuData& out) {
@@ -107,6 +108,6 @@ void Imu::GetAllData(ImuData& out) {
                                             baro_event_.pressure);
   } else {
     // barrometer error
-    Serial.println("barrometer error")
+    Serial.println("barrometer error");
   }
 }

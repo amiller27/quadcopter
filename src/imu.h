@@ -31,6 +31,8 @@ class Imu {
   static const float kGyroscopeConversionFactor = 0.0001527; // in (rad/s)/LSB
   static const float acclelerometerWeight = 0.02; //out of 1
 
+  static const float radianDegreeConversionFactor = 28.65; 
+
   unsigned long last_sensor_time;
 
   Adafruit_ADXL345_Unified accel_ = Adafruit_ADXL345_Unified(12345);
