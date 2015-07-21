@@ -64,10 +64,15 @@ void Imu::GetOrientation(Orientation& out) {
 
   Orientation p = orientation_;
 
-  float dt = -1 * last_sensor_time;     //// These two lines are designed   ////
-  dt += (last_sensor_time = micros());  //// to require only one micro call ////
+  unsigned long current = micros();
+  float dt = current - last_sensor_time;
+  last_sensor_time = current;
 
-  dt /= 1000000; //convert dt to seconds for sensor compatibility
+  dt /= 1000000.0; //convert dt to seconds for sensor compatibility
+  Serial.print("last sensor time: ");
+  Serial.println(last_sensor_time);
+  Serial.print("dt: ");
+  Serial.println(dt);
 
 
   /////////////////////////////// BANK ///////////////////////////////////////
@@ -79,14 +84,14 @@ kGyroscopeConversionFactor * gyro_.g.x * dt) + acclelerometerWeight * accel_bank
   /////////////////////////////// ATTITUDE ///////////////////////////////////
   orientation_.attitude = (1-acclelerometerWeight) * 
   (p.attitude + kGyroscopeConversionFactor * dt * 
-  (gyro_.g.y * cos(p.bank) + gyro_.g.z * 
-  sin(p.bank))) + acclelerometerWeight * accel_heading;
+  (gyro_.g.y * cos(p.bank / radianDegreeConversionFactor) + gyro_.g.z * 
+  sin(p.bank / radianDegreeConversionFactor))) + acclelerometerWeight * accel_heading;
   ////////////////////////////////////////////////////////////////////////////
  
 
   /////////////////////////////// HEADING ////////////////////////////////////
-  orientation_.heading = atan2(mag_event_.magnetic.y * cos(p.bank), 
-                               mag_event_.magnetic.x * cos(p.attitude)) *
+  orientation_.heading = atan2(mag_event_.magnetic.y * cos(p.bank / radianDegreeConversionFactor), 
+                               mag_event_.magnetic.x * cos(p.attitude / radianDegreeConversionFactor)) *
                                radianDegreeConversionFactor;
   ////////////////////////////////////////////////////////////////////////////
 
