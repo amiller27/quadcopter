@@ -1,38 +1,20 @@
-#include "controller.h"
-#include "gps_controller.h"
 #include "imu.h"
-#include "radio_controller.h"
-#include "rc_receiver.h"
 
-Controller* controller;
-GpsController* gps_controller;
 Imu* imu;
-RadioController* radio_controller;
-RcReceiver* receiver;
-
-OperationMode mode;
+Orientation o;
 
 void setup() {
   imu = new Imu();
-  receiver = RcReceiver::Create();
-
-  controller = new Controller(imu);
-  
-  gps_controller = GpsController::Create(controller, imu);
-  radio_controller = new RadioController(controller, receiver);
+  Serial.begin(115200);
 }
 
 void loop() {
-  // imu->UpdateOrientation();
-  receiver->Update();
-  receiver->GetMode(mode);
-  
-  switch (mode) {
-    case rc:
-      radio_controller->Update();
-      break;
-    case gps:
-      gps_controller->Update();
-      break;
-  }
+  imu->GetOrientation(o);
+  Serial.print("Heading:  ");
+  Serial.print(o.heading);
+  Serial.print("\tPitch:  ");
+  Serial.print(o.attitude);
+  Serial.print("\tRoll:  ");
+  Serial.println(o.bank);
+  delay(50);
 }

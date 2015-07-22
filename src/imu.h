@@ -29,10 +29,10 @@ class Imu {
   static const float kMagnetometerYOffset = 10; // in uT
   static const float kMagnetometerZOffset = -5; // in uT
   static const float kMagneticDeclination = -0.20624; // in radians
-  static const float kGyroscopeConversionFactor = 0.0001527; // in (rad/s)/LSB
-  static const float acclelerometerWeight = 0.02; //out of 1
+  static const float kGyroscopeConversionFactor = 0.0087491; // in (deg/s)/LSB
+  static const float acclelerometerWeight = 0.03; //out of 1
 
-  static const float radianDegreeConversionFactor = 28.65; 
+  static const float radianDegreeConversionFactor = 57.3; 
 
   unsigned long last_sensor_time;
 
