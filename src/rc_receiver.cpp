@@ -15,6 +15,11 @@ RcReceiver* RcReceiver::Create() {
     result->SetInterrupts();
   }
 
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCNT1 = 0;
+  TCCR1B |= _BV(CS01);
+
   return result;
 }
 
@@ -25,7 +30,7 @@ void RcReceiver::Update() {
     update_flags_ = update_flags_shared_;
     
     for (int i = 0; i < 8; i++) {
-      if (update_flags_ & kFlags[i]) {
+      if (update_flags_ & _BV(i)) {
         inputs_[i] = inputs_shared_[i];
       }
     }
@@ -37,7 +42,7 @@ void RcReceiver::Update() {
 }
 
 void RcReceiver::GetMode(OperationMode& out) {
-  if (inputs_[mode] == 0) {
+  if (inputs_[mode] <= kModeCutoff) {
     out = rc;
   } else {
     out = gps;
@@ -56,7 +61,7 @@ void RcReceiver::Interrupt(int channel) {
     input_start_times_[channel] = TCNT1;
   } else {
     inputs_shared_[channel] = (TCNT1 - input_start_times_[channel]) >> 1;
-    update_flags_shared_ |= kFlags[channel];
+    update_flags_shared_ |= _BV(channel);
   }
 }
 

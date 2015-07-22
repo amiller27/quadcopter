@@ -38,8 +38,9 @@ class RcReceiver {
     unmapped3 = 7
   };
 
-  // all arrays in this class are indexed by channel, 0-7
-  const int kFlags[8] {1, 2, 4, 8, 16, 32, 64, 128};
+  const float kModeCutoff = 1400;
+
+  // indexed by channel, 0-7
   const int kPins[8] {0, 0, 0, 0, 0, 0, 0, 0};
   
   uint8_t update_flags_ = 0;

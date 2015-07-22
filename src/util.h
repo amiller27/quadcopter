@@ -41,7 +41,7 @@ struct Orientation {
   //Orientation is calculated as intrinsic Tait-Bryan angles about the..
   float heading;    // z  axis
   float attitude;   // y' axis
-  float bank;       // z" axis
+  float bank;       // x" axis
 };
 
 #endif
