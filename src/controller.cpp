@@ -2,6 +2,6 @@
 
 Controller::Controller(Imu* imu) : imu_(imu) {}
 
-void Controller::Update(/* type here TBD */) {
+void Controller::Update(Commands& commands) {
   
 }
