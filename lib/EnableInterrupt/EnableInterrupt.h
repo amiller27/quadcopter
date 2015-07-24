@@ -1177,7 +1177,7 @@ ISR(PORTC_VECT) {
 }
 #endif // EI_NOTPORTC
 
-#ifndef EI_NOTPORTC
+#ifndef EI_NOTPORTD
 ISR(PORTD_VECT) {
   uint8_t current;
   uint8_t interruptMask;
