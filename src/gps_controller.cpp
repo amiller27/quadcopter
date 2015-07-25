@@ -3,7 +3,7 @@
 GpsController* g_interrupt_gps_controller = 0;
 
 // function to run on interrupt from timer 0
-SIGNAL(TIMER0_COMPA_vect) {
+ISR(TIMER0_COMPA_vect) {
   g_interrupt_gps_controller->Read();
 }
 
@@ -20,10 +20,10 @@ GpsController* GpsController::Create(Controller* controller, Imu* imu) {
 GpsController::GpsController(Controller* controller, Imu* imu)
     : controller_(controller),
       imu_(imu) {
-//   gps_.begin(9600);
-//   gps_.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-//   gps_.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
-//   gps_.sendCommand(PGCMD_ANTENNA);
+  gps_.begin(9600);
+  gps_.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+  gps_.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
+  gps_.sendCommand(PGCMD_ANTENNA);
 
   // set compare match register for timer 0
   OCR0A = 0xAF;
@@ -36,21 +36,21 @@ GpsController::GpsController(Controller* controller, Imu* imu)
 // /////////////////////////////////////
 
 void GpsController::Read() {
-//   gps_.read();
+  gps_.read();
 }
 
 void GpsController::Update() {
   imu_->GetHeading(last_heading_);
 
-  // if (gps_.newNMEAreceived() && gps_.parse(gps_.lastNMEA())) {
-  //   if (gps_.fix) {
-  //     last_gps_location_.latitude = gps_.latitudeDegrees;
-  //     last_gps_location_.longitude = gps_.longitudeDegrees;
-  //     last_gps_location_.altitude = gps_.altitude;
-  //   }
-  // } else {
-  //   // a new sentence is not available, or the parsing failed
-  // }
+  if (gps_.newNMEAreceived() && gps_.parse(gps_.lastNMEA())) {
+    if (gps_.fix) {
+      last_gps_location_.latitude = gps_.latitudeDegrees;
+      last_gps_location_.longitude = gps_.longitudeDegrees;
+      last_gps_location_.altitude = gps_.altitude;
+    }
+  } else {
+    // a new sentence is not available, or the parsing failed
+  }
 
   // check if we are at the next waypoint
   if (abs(last_gps_location_.latitude - waypoints_[next_waypoint_].latitude)

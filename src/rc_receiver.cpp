@@ -1,5 +1,11 @@
 #include "rc_receiver.h"
 
+// tells EnableInterrupt to only register interrupts for pins D8 to D13
+// this is needed to be compatible with SoftwareSerial
+#define EI_NOTPORTB
+#define EI_NOTPORTC
+#define EI_NOTPORTD
+
 // we have to do this here, not in rc_receiver.h,
 // because the writer of EnableInterrupt.h defined a bunch
 // of global variables which are defined each time the header is included
