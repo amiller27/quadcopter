@@ -78,7 +78,7 @@ void GpsController::Update() {
   } else {
     // no, we aren't
     controller_commands_.heading = target_heading;
-    controller_commands_.elevation = 0;
+    controller_commands_.attitude = 0;
     controller_commands_.bank = 0;
   }
 

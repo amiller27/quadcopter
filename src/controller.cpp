@@ -2,6 +2,6 @@
 
 Controller::Controller(Imu* imu) : imu_(imu) {}
 
-void Controller::Update(Commands& commands) {
+void Controller::Update(ControllerCommands& commands) {
   
 }

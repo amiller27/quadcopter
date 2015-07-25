@@ -2,7 +2,7 @@
 #define QUADCOPTER_GPS_CONTROLLER_H_
 
 #include <Adafruit_GPS.h>
-#include <SoftwareSerial.h>
+#include <CustomSoftwareSerial.h>
 
 #include "controller.h"
 #include "imu.h"
@@ -59,7 +59,7 @@ class GpsController {
   static const float kMetersPerDegreeLongitude = 85642.43721853253;
 
   Controller* controller_;
-  Commands controller_commands_;
+  ControllerCommands controller_commands_;
   Imu* imu_;
 
   GpsLocation waypoints_[];

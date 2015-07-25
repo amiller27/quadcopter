@@ -23,7 +23,7 @@ All text above must be included in any redistribution
 
 #ifdef __AVR__
   #if ARDUINO >= 100
-    #include <SoftwareSerial.h>
+    #include <CustomSoftwareSerial.h>
   #else
     #include <NewSoftSerial.h>
   #endif
@@ -89,7 +89,7 @@ All text above must be included in any redistribution
 #if ARDUINO >= 100
  #include "Arduino.h"
 #if defined (__AVR__) && !defined(__AVR_ATmega32U4__)
- #include "SoftwareSerial.h"
+ #include "CustomSoftwareSerial.h"
 #endif
 #else
  #include "WProgram.h"

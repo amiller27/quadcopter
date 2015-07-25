@@ -1,10 +1,8 @@
 #include "rc_receiver.h"
 
-// tells EnableInterrupt to only register interrupts for pins D8 to D13
+// tells EnableInterrupt to only register interrupts for pins D0 to D13
 // this is needed to be compatible with SoftwareSerial
-#define EI_NOTPORTB
 #define EI_NOTPORTC
-#define EI_NOTPORTD
 
 // we have to do this here, not in rc_receiver.h,
 // because the writer of EnableInterrupt.h defined a bunch
@@ -56,8 +54,8 @@ void RcReceiver::GetMode(OperationMode& out) {
 }
 
 void RcReceiver::GetCommands(RcCommands& out) {
-  out.pitch = inputs_[pitch];
-  out.roll = inputs_[roll];
+  out.attitude = inputs_[attitude];
+  out.bank = inputs_[bank];
   out.yaw = inputs_[yaw];
   out.throttle = inputs_[throttle];
 }

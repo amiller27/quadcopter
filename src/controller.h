@@ -4,9 +4,9 @@
 #include "imu.h"
 #include "util.h"
 
-struct Commands {
+struct ControllerCommands {
   float heading = 0;
-  float elevation = 0;
+  float attitude = 0;
   float bank = 0;
   float throttle = 0;
 };
@@ -16,7 +16,7 @@ class Controller {
   Controller(Imu* imu);
   ~Controller();
 
-  void Update(Commands& commands);
+  void Update(ControllerCommands& commands);
   
  private:
   Orientation current_orientation_;

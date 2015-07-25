@@ -9,9 +9,9 @@ enum OperationMode {
 };
 
 struct RcCommands {
-  float pitch = 0;
-  float roll = 0;
   float yaw = 0;
+  float attitude = 0;
+  float bank = 0;
   float throttle = 0;
 };
 
@@ -28,8 +28,8 @@ class RcReceiver {
  private:
   RcReceiver() {};
   enum {
-    roll = 0,
-    pitch = 1,
+    bank = 0,
+    attitude = 1,
     throttle = 2,
     yaw = 3,
     mode = 4,

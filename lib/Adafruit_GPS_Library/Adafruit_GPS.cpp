@@ -11,7 +11,7 @@ All text above must be included in any redistribution
 ****************************************/
 #ifdef __AVR__
   // Only include software serial on AVR platforms (i.e. not on Due).
-  #include <SoftwareSerial.h>
+  #include <CustomSoftwareSerial.h>
 #endif
 #include <Adafruit_GPS.h>
 
