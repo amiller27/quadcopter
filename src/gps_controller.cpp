@@ -40,7 +40,7 @@ void GpsController::Read() {
 }
 
 void GpsController::Update() {
-  imu_->GetHeading(last_heading_);
+  //imu_->GetHeading(last_heading_);
 
   if (gps_.newNMEAreceived() && gps_.parse(gps_.lastNMEA())) {
     if (gps_.fix) {

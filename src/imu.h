@@ -20,7 +20,6 @@ class Imu {
   Imu();
   ~Imu();
 
-  void GetHeading(float& out);
   void GetOrientation(Orientation& out);
   void GetAllData(ImuData& out);
 

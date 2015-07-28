@@ -1,20 +1,18 @@
-#include "imu.h"
+#include <Servo.h>
 
-Imu* imu;
-Orientation o;
+Servo esc;
+int val = 2000;
 
 void setup() {
-  imu = new Imu();
   Serial.begin(115200);
+  esc.attach(3);
 }
 
 void loop() {
-  imu->GetOrientation(o);
-  Serial.print("Heading:  ");
-  Serial.print(o.heading);
-  Serial.print("\tPitch:  ");
-  Serial.print(o.attitude);
-  Serial.print("\tRoll:  ");
-  Serial.println(o.bank);
-  delay(50);
+  if (Serial.available()) {
+    val = Serial.parseInt();
+    Serial.println(val);
+  }
+  esc.writeMicroseconds(val);
+  delay(10);
 }
