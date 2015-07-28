@@ -44,7 +44,7 @@ void Controller::Update(ControllerCommands& commands) {
   (++error_index)%=error_hisory;
 
   //determind quad adjustments (in % throttle)
-  float thr = commands.throttle;
+  float thr = commands.throttle * kThrottleCap;
   float h_adj = kP_heading * current_error_.heading +
                              kI_heading * heading_error_sum / error_hisory;
   float a_adj = kP_attitude * current_error_.attitude +
