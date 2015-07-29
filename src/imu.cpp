@@ -34,8 +34,10 @@ Imu::Imu() {
   }
 
   while (error) {
+    Serial.println("Sensor setup error in imu.cpp.");
+    Serial.print("error code: ");
     Serial.println(error);
-    delay(100);
+    delay(500);
   }
 
   last_sensor_time = micros();
@@ -49,27 +51,21 @@ void Imu::GetOrientation(Orientation& out) {
   // has event.acceleration.(x|y|z) in m/s^2
   accel_.getEvent(&accel_event_);
 
+  //process acceleration information
   float g = pow(pow(accel_event_.acceleration.x, 2) +
                 pow(accel_event_.acceleration.y, 2) +
                 pow(accel_event_.acceleration.z, 2), 0.5);
   
   float accel_bank = 90 - asin(pow(pow(accel_event_.acceleration.x, 2) +
                  pow(accel_event_.acceleration.z, 2), 0.5)/g) *
-                         radianDegreeConversionFactor;
+                         RAD_TO_DEG;
   if (accel_event_.acceleration.y > 0) {accel_bank *= -1;}
 
 
   float accel_attitude = 90 - asin(pow(pow(accel_event_.acceleration.y, 2) +
                  pow(accel_event_.acceleration.z, 2), 0.5)/g) *
-                         radianDegreeConversionFactor;
+                         RAD_TO_DEG;
   if (accel_event_.acceleration.x < 0) {accel_attitude *= -1;}
-
-  /*
-  float accel_heading = 90 - asin(pow(pow(accel_event_.acceleration.x, 2) +
-                 pow(accel_event_.acceleration.y, 2), 0.5)/g) *
-                         radianDegreeConversionFactor;
-  if (accel_event_.acceleration.z > 0) {accel_heading *= -1;}
-  */
   ///////////////////////////////////////////////////////////////////////////
 
 
@@ -85,15 +81,14 @@ void Imu::GetOrientation(Orientation& out) {
   ///////////////////////////////////////////////////////////////////////////
   
 
-  Orientation p = orientation_;
+  Orientation p = orientation_; //previous orientation
 
+  //update sensor time and calculate elapsed time
   unsigned long current = micros();
   float dt = current - last_sensor_time;
   last_sensor_time = current;
 
   dt /= 1000000; //convert dt to seconds for sensor compatibility
-  //Serial.print("dt: ");
-  //Serial.println(dt, 5);
 
 
   /////////////////////////////// BANK ///////////////////////////////////////
@@ -105,15 +100,15 @@ void Imu::GetOrientation(Orientation& out) {
   /////////////////////////////// ATTITUDE ///////////////////////////////////
   orientation_.attitude = (1-acclelerometerWeight) * 
   (p.attitude + kGyroscopeConversionFactor * dt * 
-  (gyro_.g.y * cos(p.bank / radianDegreeConversionFactor) + gyro_.g.z * 
-  sin(p.bank / radianDegreeConversionFactor))) + acclelerometerWeight * accel_attitude;
+  (gyro_.g.y * cos(p.bank / RAD_TO_DEG) + gyro_.g.z * 
+  sin(p.bank / RAD_TO_DEG))) + acclelerometerWeight * accel_attitude;
   ////////////////////////////////////////////////////////////////////////////
  
 
   /////////////////////////////// HEADING ////////////////////////////////////
-  orientation_.heading = atan2((mag_event_.magnetic.y+kMagnetometerYOffset) / cos(p.bank / radianDegreeConversionFactor), 
-                               (mag_event_.magnetic.x+kMagnetometerXOffset) / cos(p.attitude / radianDegreeConversionFactor)) *
-                               radianDegreeConversionFactor;
+  orientation_.heading = atan2((mag_event_.magnetic.y+kMagnetometerYOffset) / cos(p.bank / RAD_TO_DEG), 
+                               (mag_event_.magnetic.x+kMagnetometerXOffset) / cos(p.attitude / RAD_TO_DEG)) *
+                               RAD_TO_DEG;
   ////////////////////////////////////////////////////////////////////////////
 
 

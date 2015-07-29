@@ -43,8 +43,13 @@ void Controller::Update(ControllerCommands& commands) {
   //increment index and reset to 0 if necessary
   (++error_index)%=error_hisory;
 
+  /*
+  NOTE: orientation ajustments are independent of throttle. In future, maybe adjustments
+        should be proportional to throttle
+  */
+
   //determind quad adjustments (in % throttle)
-  float thr = commands.throttle * kThrottleCap;
+  float thr = commands.throttle * kThrottleScaling;
   float h_adj = kP_heading * current_error_.heading +
                              kI_heading * heading_error_sum / error_hisory;
   float a_adj = kP_attitude * current_error_.attitude +

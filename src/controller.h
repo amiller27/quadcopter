@@ -31,10 +31,10 @@ class Controller {
   const static float kP_bank = 1;
   const static float kI_bank = 0;
 
-  //Maximum throttle cap. 50% throttle cap is 0.5
-  //WARNING: Setting throttle cap to or close to 1.0 (100%) might 
+  //Throttle scaling. 50% throttle scaling is 0.5
+  //WARNING: Setting throttle scaling to or close to 1.0 (100%) might 
   //         inhibit manuverability at high throttle values!!!
-  const static float kThrottleCap = 0.8;
+  const static float kThrottleScaling = 0.8;
 
   //I-Term history
   const static int error_hisory = 2000;
