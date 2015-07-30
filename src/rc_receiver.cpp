@@ -35,7 +35,7 @@ void RcReceiver::Update() {
     
     for (int i = 0; i < 8; i++) {
       if (update_flags_ & _BV(i)) {
-        inputs_[i] = inputs_shared_[i];
+        inputs_[i] = constrain(map(inputs_shared_[i], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
       }
     }
     

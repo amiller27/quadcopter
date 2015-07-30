@@ -7,7 +7,7 @@
 #include <Servo.h>
 
 struct ControllerCommands {
-  float heading = 0;   //in degrees
+  float heading = 0;   //in % 
   float attitude = 0;  //in degrees
   float bank = 0;      //in degrees
   float throttle = 0;  //in % of full throttle

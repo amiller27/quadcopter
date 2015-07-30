@@ -9,10 +9,12 @@ enum OperationMode {
 };
 
 struct RcCommands {
+  //in % of maximum
   float yaw = 0;
   float attitude = 0;
   float bank = 0;
   float throttle = 0;
+  float aggressiveness = 0;
 };
 
 class RcReceiver {
@@ -39,6 +41,8 @@ class RcReceiver {
   };
 
   const float kModeCutoff = 1400;
+  const float kMinPulseLength = 1000; //NEEDS TO BE FILLED IN
+  const float kMaxPulseLength = 1800; //NEEDS TO BE FILLED IN
 
   // indexed by channel, 0-7
   const int kPins[8] {0, 0, 0, 0, 0, 0, 0, 0};
