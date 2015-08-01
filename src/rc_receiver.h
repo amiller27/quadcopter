@@ -35,7 +35,7 @@ class RcReceiver {
     throttle = 2,
     yaw = 3,
     mode = 4,
-    unmapped1 = 5,
+    aggressiveness = 5,
     unmapped2 = 6,
     unmapped3 = 7
   };

@@ -20,12 +20,15 @@ class Imu {
   Imu();
   ~Imu();
 
+  void UpdateOrientation();
   void GetOrientation(Orientation& out);
+  void UpdateAll();
   void GetAllData(ImuData& out);
 
  private:
   unsigned long last_sensor_time;
   Orientation orientation_;
+  ImuData all_data_;
 
   //complimentary filter constant
   static const float acclelerometerWeight = 0.03; //out of 1

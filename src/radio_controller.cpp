@@ -6,18 +6,21 @@ RadioController::RadioController(Controller* controller,
       receiver_(receiver) {}
 
 void RadioController::Update() {
-  receiver.Update();
-  receiver.GetCommands(commands_);
+  receiver_->Update();
+  receiver_->GetCommands(commands_);
 
-  ControllerCommands outputCommand;
-  outputCommand.heading += 2*(commands_.heading - 0.5) * commands_.aggressiveness *
-                           kMaxHeadingChange;
-  outputCommand.heading %= 360;
-  outputCommand.attitude = 2*(commands_.attitude - 0.5) * commands_.aggressiveness *
+  unsigned long current_time = micros();
+  float dt = (current_time - last_time_) / 1000000.0; // in s
+  last_time_ = current_time;
+
+  output_commands_.heading += 2*(commands_.yaw - 0.5) * dt *
+                           commands_.aggressiveness * kMaxHeadingChange;
+  output_commands_.heading = fmod(output_commands_.heading + 360, 360);
+  output_commands_.attitude = 2*(commands_.attitude - 0.5) * commands_.aggressiveness *
                            kMaxPitchRollAngle;
-  outputCommand.bank = 2*(commands_.bank - 0.5) * commands_.aggressiveness * 
+  output_commands_.bank = 2*(commands_.bank - 0.5) * commands_.aggressiveness * 
                        kMaxPitchRollAngle;
-  outputCommand.throttle = commands_.throttle;
+  output_commands_.throttle = commands_.throttle;
 
-  controller_->Update(outputCommand);
+  controller_->SetCommands(output_commands_);
 }

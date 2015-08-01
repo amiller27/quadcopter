@@ -22,7 +22,7 @@ RcReceiver* RcReceiver::Create() {
   TCCR1A = 0;
   TCCR1B = 0;
   TCNT1 = 0;
-  TCCR1B |= _BV(CS01);
+  TCCR1B |= _BV(CS11);
 
   return result;
 }
@@ -34,9 +34,7 @@ void RcReceiver::Update() {
     update_flags_ = update_flags_shared_;
     
     for (int i = 0; i < 8; i++) {
-      if (update_flags_ & _BV(i)) {
-        inputs_[i] = constrain(map(inputs_shared_[i], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
-      }
+      inputs_[i] = inputs_shared_[i]; 
     }
     
     update_flags_shared_ = 0;
@@ -54,10 +52,11 @@ void RcReceiver::GetMode(OperationMode& out) {
 }
 
 void RcReceiver::GetCommands(RcCommands& out) {
-  out.attitude = inputs_[attitude];
-  out.bank = inputs_[bank];
-  out.yaw = inputs_[yaw];
-  out.throttle = inputs_[throttle];
+  out.attitude = constrain(map(inputs_[attitude], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
+  out.bank = constrain(map(inputs_[bank], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
+  out.yaw = constrain(map(inputs_[yaw], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
+  out.throttle = constrain(map(inputs_[throttle], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
+  out.aggressiveness = constrain(map(inputs_[aggressiveness], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
 }
 
 void RcReceiver::Interrupt(int channel) {

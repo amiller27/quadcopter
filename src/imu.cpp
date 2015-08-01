@@ -34,10 +34,8 @@ Imu::Imu() {
   }
 
   while (error) {
-    Serial.println("Sensor setup error in imu.cpp.");
-    Serial.print("error code: ");
     Serial.println(error);
-    delay(500);
+    delay(100);
   }
 
   last_sensor_time = micros();
@@ -46,12 +44,11 @@ Imu::Imu() {
   orientation_.heading=0;
 }
 
-void Imu::GetOrientation(Orientation& out) {
+void Imu::UpdateOrientation() {
   ///////////////////////////// ACCELEROMETER ///////////////////////////////
   // has event.acceleration.(x|y|z) in m/s^2
   accel_.getEvent(&accel_event_);
 
-  //process acceleration information
   float g = pow(pow(accel_event_.acceleration.x, 2) +
                 pow(accel_event_.acceleration.y, 2) +
                 pow(accel_event_.acceleration.z, 2), 0.5);
@@ -66,6 +63,13 @@ void Imu::GetOrientation(Orientation& out) {
                  pow(accel_event_.acceleration.z, 2), 0.5)/g) *
                          RAD_TO_DEG;
   if (accel_event_.acceleration.x < 0) {accel_attitude *= -1;}
+
+  /*
+  float accel_heading = 90 - asin(pow(pow(accel_event_.acceleration.x, 2) +
+                 pow(accel_event_.acceleration.y, 2), 0.5)/g) *
+                         RAD_TO_DEG;
+  if (accel_event_.acceleration.z > 0) {accel_heading *= -1;}
+  */
   ///////////////////////////////////////////////////////////////////////////
 
 
@@ -81,14 +85,15 @@ void Imu::GetOrientation(Orientation& out) {
   ///////////////////////////////////////////////////////////////////////////
   
 
-  Orientation p = orientation_; //previous orientation
+  Orientation p = orientation_;
 
-  //update sensor time and calculate elapsed time
   unsigned long current = micros();
   float dt = current - last_sensor_time;
   last_sensor_time = current;
 
   dt /= 1000000; //convert dt to seconds for sensor compatibility
+  //Serial.print("dt: ");
+  //Serial.println(dt, 5);
 
 
   /////////////////////////////// BANK ///////////////////////////////////////
@@ -110,25 +115,33 @@ void Imu::GetOrientation(Orientation& out) {
                                (mag_event_.magnetic.x+kMagnetometerXOffset) / cos(p.attitude / RAD_TO_DEG)) *
                                RAD_TO_DEG;
   ////////////////////////////////////////////////////////////////////////////
+}
 
-
+void Imu::GetOrientation(Orientation& out) {
   out.bank = orientation_.bank;
   out.attitude = orientation_.attitude;
   out.heading = orientation_.heading;
 }
 
-void Imu::GetAllData(ImuData& out) {
-  GetOrientation(out.orientation);
+void Imu::UpdateAll() {
+  UpdateOrientation();
 
   baro_.getEvent(&baro_event_);
   if (baro_event_.pressure) {
-    out.pressure = baro_event_.pressure;
-    baro_.getTemperature(&(out.temperature));
+    all_data_.pressure = baro_event_.pressure;
+    baro_.getTemperature(&(all_data_.temperature));
 
-    out.altitude = baro_.pressureToAltitude(SENSORS_PRESSURE_SEALEVELHPA,
+    all_data_.altitude = baro_.pressureToAltitude(SENSORS_PRESSURE_SEALEVELHPA,
                                             baro_event_.pressure);
   } else {
     // barrometer error
     Serial.println("barrometer error");
   }
+}
+
+void Imu::GetAllData(ImuData& out) {
+  Imu::GetOrientation(out.orientation);
+  out.pressure = all_data_.pressure;
+  out.temperature = all_data_.temperature;
+  out.altitude = all_data_.altitude;
 }

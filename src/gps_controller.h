@@ -32,8 +32,8 @@ class GpsController {
 
  private:
   // Pins
-  static const int kGpsTxPin = 3; // Tx on GPS, Rx on Arduino
-  static const int kGpsRxPin = 2; // Rx on GPS, Tx on Arduino
+  static const int kGpsTxPin = A1; // Tx on GPS, Rx on Arduino
+  static const int kGpsRxPin = A0; // Rx on GPS, Tx on Arduino
 
   // PID constants
   static const float kTiltP = 1;

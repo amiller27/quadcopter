@@ -7,10 +7,17 @@ Controller::Controller(Imu* imu) : imu_(imu) {
   escBL.attach(escBLPin);
 }
 
-void Controller::Update(ControllerCommands& commands) {
+void Controller::SetCommands(ControllerCommands& commands) {
+  commands_.heading = commands.heading;
+  commands_.attitude = commands.attitude;
+  commands_.bank = commands.bank;
+  commands_.throttle = commands.throttle;
+}
+
+void Controller::Update() {
 
   //full throttle cut
-  if (commands.throttle <= 0) {
+  if (commands_.throttle <= 0) {
     //power down all motors
     escFR.write(kMinPulseWidth);
     escFL.write(kMinPulseWidth);
@@ -22,9 +29,16 @@ void Controller::Update(ControllerCommands& commands) {
   imu_->GetOrientation(current_orientation_);
   
   // update current error
-  current_error_.heading = commands.heading - current_orientation_.heading;
-  current_error_.attitude = commands.attitude - current_orientation_.heading;
-  current_error_.bank = commands.bank - current_orientation_.bank;
+  current_error_.heading = commands_.heading - current_orientation_.heading;
+  if (current_error_.heading > 180) {
+    current_error_.heading -= 360;
+  }
+  else if (current_error_.heading < -180) {
+    current_error_.heading += 180;
+  }
+
+  current_error_.attitude = commands_.attitude - current_orientation_.heading;
+  current_error_.bank = commands_.bank - current_orientation_.bank;
 
   //update error history
   heading_error_sum -= heading_error_values[error_index];
@@ -49,7 +63,7 @@ void Controller::Update(ControllerCommands& commands) {
   */
 
   //determind quad adjustments (in % throttle)
-  float thr = commands.throttle * kThrottleScaling;
+  float thr = commands_.throttle * kThrottleScaling;
   float h_adj = kP_heading * current_error_.heading +
                              kI_heading * heading_error_sum / error_hisory;
   float a_adj = kP_attitude * current_error_.attitude +

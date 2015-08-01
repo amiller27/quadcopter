@@ -26,9 +26,9 @@ GpsController::GpsController(Controller* controller, Imu* imu)
   gps_.sendCommand(PGCMD_ANTENNA);
 
   // set compare match register for timer 0
-  OCR0A = 0xAF;
+  OCR2A = 0xAF;
   // enable timer 0 compare interrupt
-  TIMSK0 |= (1 << OCIE0A);
+  TIMSK2 |= (1 << OCIE0A);
 }
 
 // // MORE GPS FUNCTIONS WILL GO HERE //
@@ -47,10 +47,15 @@ void GpsController::Update() {
       last_gps_location_.latitude = gps_.latitudeDegrees;
       last_gps_location_.longitude = gps_.longitudeDegrees;
       last_gps_location_.altitude = gps_.altitude;
+    } else {
+      Serial.println("NO FIX");
     }
+
   } else {
-    // a new sentence is not available, or the parsing failed
+    Serial.println("NO CONNECTION");
   }
+  
+
 
   // check if we are at the next waypoint
   if (abs(last_gps_location_.latitude - waypoints_[next_waypoint_].latitude)
@@ -90,5 +95,6 @@ void GpsController::Update() {
     // no, we aren't
   }
 
-  controller_->Update(controller_commands_);
+  controller_->SetCommands(controller_commands_);
+  
 }

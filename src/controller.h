@@ -18,7 +18,8 @@ class Controller {
   Controller(Imu* imu);
   ~Controller();
 
-  void Update(ControllerCommands& commands);
+  void SetCommands(ControllerCommands& commands);
+  void Update();
   
  private:
   //PID constants
@@ -48,12 +49,15 @@ class Controller {
   float attitude_error_sum;
   float bank_error_sum;
 
-  //orienation
+  // Commands
+  ControllerCommands commands_;
+
+  // Orientation
   Imu* imu_;
   Orientation current_orientation_;
   Orientation current_error_;
 
-  //ESC connection constants
+  // ESC connection constants
   int escFRPin = 0;
   int escFLPin = 1;
   int escBRPin = 2;
