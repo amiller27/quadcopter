@@ -6,7 +6,6 @@ RadioController::RadioController(Controller* controller,
       receiver_(receiver) {}
 
 void RadioController::Update() {
-  receiver_->Update();
   receiver_->GetCommands(commands_);
 
   unsigned long current_time = micros();

@@ -36,8 +36,10 @@ class GpsController {
   static const int kGpsRxPin = A0; // Rx on GPS, Tx on Arduino
 
   // PID constants
-  static const float kTiltP = 1;
-  static const float kTiltI = 1;
+  static const float kTiltFrontP = 1;
+  static const float kTiltFrontI = 1;
+  static const float kTiltRightP = 1;
+  static const float kTiltRightI = 1;
   static const float kThrottleP = 1;
   static const float kThrottleI = 1;
 
@@ -58,16 +60,23 @@ class GpsController {
   static const float kMetersPerDegreeLatitude = 111030.76454339818;
   static const float kMetersPerDegreeLongitude = 85642.43721853253;
 
+  static const float kMaxAttitude = 50; // in degrees
+  static const float kMaxBank = 50; // in degrees
+
   Controller* controller_;
-  ControllerCommands controller_commands_;
   Imu* imu_;
 
-  GpsLocation waypoints_[];
+  GpsLocation PROGMEM waypoints_[1];
   int number_of_waypoints_;
   int next_waypoint_ = 0;
 
-  GpsLocation last_gps_location_;
-  float last_heading_;
+  GpsLocation gps_location_;
+
+  unsigned long last_update_time_ = 0; // in us
+
+  // in meters
+  float accumulated_error_right_ = 0;
+  float last_error_right_ = 0;
 
   SoftwareSerial serial_ = SoftwareSerial(kGpsTxPin, kGpsRxPin);
   Adafruit_GPS gps_ = Adafruit_GPS(&serial_);

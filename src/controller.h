@@ -4,7 +4,9 @@
 #include "imu.h"
 #include "util.h"
 
-#include <Servo.h>
+#include <Arduino.h>
+#include <limits.h>
+#include "CustomServo.h"
 
 struct ControllerCommands {
   float heading = 0;   //in % 
@@ -23,13 +25,13 @@ class Controller {
   
  private:
   //PID constants
-  const static float kP_heading = 1;
+  const static float kP_heading = 0.001;
   const static float kI_heading = 0;
 
-  const static float kP_attitude = 1;
+  const static float kP_attitude = 0.001;
   const static float kI_attitude = 0;
 
-  const static float kP_bank = 1;
+  const static float kP_bank = 0.001;
   const static float kI_bank = 0;
 
   //Throttle scaling. 50% throttle scaling is 0.5
@@ -38,12 +40,12 @@ class Controller {
   const static float kThrottleScaling = 0.8;
 
   //I-Term history
-  const static int error_hisory = 2000;
-  int error_index;
+  // const static int error_hisory = 2;
+  // int error_index;
 
-  float heading_error_values[error_hisory];
-  float attitude_error_values[error_hisory];
-  float bank_error_values[error_hisory];
+  // float heading_error_values[error_hisory];
+  // float attitude_error_values[error_hisory];
+  // float bank_error_values[error_hisory];
 
   float heading_error_sum;
   float attitude_error_sum;
@@ -54,20 +56,18 @@ class Controller {
 
   // Orientation
   Imu* imu_;
-  Orientation current_orientation_;
-  Orientation current_error_;
 
   // ESC connection constants
-  int escFRPin = 0;
-  int escFLPin = 1;
-  int escBRPin = 2;
-  int escBLPin = 3;
+  int escFRPin = 8;
+  int escFLPin = 9;
+  int escBRPin = 10;
+  int escBLPin = 11;
   Servo escFR;
   Servo escFL;
   Servo escBR;
   Servo escBL;
   const int kMinPulseWidth = 1000; //in microseconds
-  const int kMaxPulseWidth = 1000; //in microseconds
+  const int kMaxPulseWidth = 2000; //in microseconds
 };
 
 #endif

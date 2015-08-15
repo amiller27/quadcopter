@@ -2,12 +2,16 @@
 
 // tells EnableInterrupt to only register interrupts for pins D0 to D13
 // this is needed to be compatible with SoftwareSerial
+#define EI_NOTEXTERNAL
+#define EI_NOTPORTB
 #define EI_NOTPORTC
 
 // we have to do this here, not in rc_receiver.h,
 // because the writer of EnableInterrupt.h defined a bunch
 // of global variables which are defined each time the header is included
 #include <EnableInterrupt.h>
+
+#include "util.h"
 
 RcReceiver* g_interrupt_receiver = 0;
 
@@ -52,18 +56,24 @@ void RcReceiver::GetMode(OperationMode& out) {
 }
 
 void RcReceiver::GetCommands(RcCommands& out) {
-  out.attitude = constrain(map(inputs_[attitude], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
-  out.bank = constrain(map(inputs_[bank], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
-  out.yaw = constrain(map(inputs_[yaw], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
-  out.throttle = constrain(map(inputs_[throttle], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
-  out.aggressiveness = constrain(map(inputs_[aggressiveness], kMinPulseLength, kMaxPulseLength, 0, 1), 0, 1);
+  out.attitude = mapf(inputs_[attitude], kMinPulseLength, kMaxPulseLength, 0, 1);
+  out.bank = mapf(inputs_[bank], kMinPulseLength, kMaxPulseLength, 0, 1);
+  out.yaw = mapf(inputs_[yaw], kMinPulseLength, kMaxPulseLength, 0, 1);
+  out.throttle = mapf(inputs_[throttle], kMinPulseLength, kMaxPulseLength, 0, 1);
+  out.aggressiveness = mapf(inputs_[aggressiveness], kMinPulseLength, kMaxPulseLength, 0, 1);
 }
 
 void RcReceiver::Interrupt(int channel) {
-  if (digitalRead(kPins[channel]) == HIGH) {
+  if (PIND & _BV(kPins[channel])) {
+    servo_reset_timer_flags &= ~_BV(channel);
     input_start_times_[channel] = TCNT1;
   } else {
-    inputs_shared_[channel] = (TCNT1 - input_start_times_[channel]) >> 1;
+    if (servo_reset_timer_flags & _BV(channel)) {
+      inputs_shared_[channel] = TCNT1 + timer_value_when_reset - input_start_times_[channel];
+      servo_reset_timer_flags &= ~_BV(channel);
+    } else {
+      inputs_shared_[channel] = TCNT1 - input_start_times_[channel];
+    }
     update_flags_shared_ |= _BV(channel);
   }
 }

@@ -13,12 +13,9 @@ class RadioController {
   
  private:
   Controller* controller_;
+  ControllerCommands output_commands_;
   RcReceiver* receiver_;
   RcCommands commands_;
-
-  ControllerCommands output_commands_;
-
-  float desiredHeading;
 
   unsigned long last_time_ = 0;
 

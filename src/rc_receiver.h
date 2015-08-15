@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "CustomServo.h"
+
 enum OperationMode {
   gps,
   rc
@@ -40,12 +42,12 @@ class RcReceiver {
     unmapped3 = 7
   };
 
-  const float kModeCutoff = 1400;
-  const float kMinPulseLength = 1000; //NEEDS TO BE FILLED IN
-  const float kMaxPulseLength = 1800; //NEEDS TO BE FILLED IN
+  static const uint16_t kModeCutoff = 2952;
+  static const uint16_t kMinPulseLength = 2112;
+  static const uint16_t kMaxPulseLength = 3792;
 
   // indexed by channel, 0-7
-  const int kPins[8] {0, 0, 0, 0, 0, 0, 0, 0};
+  const uint8_t kPins[8] {2, 3, 4, 5, 6, 7, 0, 0};
   
   uint8_t update_flags_ = 0;
   uint16_t inputs_[8];
@@ -53,6 +55,8 @@ class RcReceiver {
   // shared variables
   volatile uint8_t update_flags_shared_ = 0;
   volatile uint16_t inputs_shared_[8];
+
+  volatile uint16_t periods_[8];
   
   // interrupt variables
   uint16_t input_start_times_[8];
