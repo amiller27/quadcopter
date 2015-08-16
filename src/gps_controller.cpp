@@ -10,13 +10,11 @@ ISR(TIMER0_COMPA_vect) {
 }
 
 GpsController* GpsController::Create(Controller* controller, Imu* imu) {
-  GpsController* result = new GpsController(controller, imu);
-
-  if (!g_interrupt_gps_controller) {
-    g_interrupt_gps_controller = result;
+  if (g_interrupt_gps_controller == 0) {
+    g_interrupt_gps_controller = new GpsController(controller, imu);
   }
 
-  return result;
+  return g_interrupt_gps_controller;
 }
 
 GpsController::GpsController(Controller* controller, Imu* imu)
@@ -107,7 +105,7 @@ void GpsController::Update() {
 
 
   // the angle between the target heading and the current heading
-  //
+  
   // -180 < error_heading < 180
   float error_heading = target_heading - heading;
   if (error_heading < -180) {
