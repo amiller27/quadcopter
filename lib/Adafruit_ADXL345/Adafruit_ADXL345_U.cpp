@@ -217,6 +217,7 @@ bool Adafruit_ADXL345_Unified::begin() {
     pinMode(_do, OUTPUT);
     pinMode(_di, INPUT);
   }
+  Serial.println("ADAFRUIT LINE 220");
 
   /* Check connection */
   uint8_t deviceid = getDeviceID();

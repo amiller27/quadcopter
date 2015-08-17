@@ -1,0 +1,37 @@
+#include "radio_controller.h"
+#include "controller.h"
+#include "rc_receiver.h"
+#include "imu.h"
+//#include "gps_controller.h"
+
+RadioController* radio_controller;
+Controller* controller;
+Imu* imu;
+//GpsController* gps_controller;
+
+float last;
+float dt;
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("check 1");
+  imu = new Imu();
+  Serial.println("check 2");
+  controller = new Controller(imu);
+  Serial.println("check 3");
+  radio_controller = new RadioController(controller, RcReceiver::Create());
+  Serial.println("check 4");
+  //gps_controller = GpsController::Create(controller, imu);
+  dt = 0;
+}
+
+void loop() {
+  dt = micros()-last;
+  last = micros();
+
+  Serial.println(dt);
+
+  imu->UpdateOrientation();
+  radio_controller->Update();
+  controller->Update();
+}

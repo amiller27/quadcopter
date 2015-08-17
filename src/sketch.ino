@@ -1,4 +1,5 @@
 #include "rc_receiver.h"
+<<<<<<< Updated upstream
 #include "controller.h"
 #include "imu.h"
 #include "radio_controller.h"
@@ -49,3 +50,38 @@ void loop() {
 
   Serial.println();
 }
+=======
+#include "CustomServo.h"
+
+RcReceiver* recevier;
+
+Servo esc1;
+Servo esc2;
+Servo esc3;
+Servo esc4;
+
+void setup() {
+  receiver = RcReceiver::Create();
+  esc1.attach(8);
+  esc2.attach(9);
+  esc3.attach(10);
+  esc4.attach(11);
+}
+
+RcCommands commands;
+void loop() {
+  receiver->Update();
+  receiver->GetCommands(commands);
+  int throttle;
+  if (commands.throttle < .5) {
+    throttle = 1000;
+  }
+  else {
+    throttle = 2000;
+  }
+  esc1.writeMicroseconds(throttle);
+  esc2.writeMicroseconds(throttle);
+  esc3.writeMicroseconds(throttle);
+  esc4.writeMicroseconds(throttle);
+}
+>>>>>>> Stashed changes

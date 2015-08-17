@@ -22,6 +22,7 @@ class Imu {
   Imu();
   ~Imu();
 
+  void GetHeading(float& out);
   void UpdateOrientation();
   void GetHeading(float& out);
   void GetOrientation(Orientation& out);
