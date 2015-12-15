@@ -24,6 +24,10 @@ void setup() {
   gps_controller = GpsController::Create(controller, imu);
 }
 
+uint16_t last_time = 0;
+uint32_t count = 0;
+uint32_t dt = 0;
+
 void loop() {
   receiver->Update();
   receiver->GetMode(mode);
@@ -31,21 +35,29 @@ void loop() {
 
   imu->UpdateAll();
 
-  Serial.print(mode);
-  Serial.print(F("\t"));
-  Serial.print(commands.aggressiveness, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.throttle, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.yaw, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.attitude, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.bank, 10);
-  Serial.print(F("\t"));
+  uint16_t t = micros();
+  dt += t - last_time;
+  last_time = t;
+
+  if ((count++)%100 == 0) {
+    Serial.println(dt);
+    dt = 0;
+  }
+
+  // Serial.print(mode);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.aggressiveness, 10);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.throttle, 10);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.yaw, 10);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.attitude, 10);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.bank, 10);
+  // Serial.print(F("\t"));
 
   radio_controller->Update();
   controller->Update();
 
-  Serial.println();
 }

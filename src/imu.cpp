@@ -49,27 +49,20 @@ void Imu::UpdateOrientation() {
   // has event.acceleration.(x|y|z) in m/s^2
   accel_.getEvent(&sensor_event_);
 
-  float g = pow(pow(sensor_event_.acceleration.x, 2) +
-                pow(sensor_event_.acceleration.y, 2) +
-                pow(sensor_event_.acceleration.z, 2), 0.5);
+  float g = sqrt(sq(sensor_event_.acceleration.x) +
+                 sq(sensor_event_.acceleration.y) +
+                 sq(sensor_event_.acceleration.z));
   
-  float accel_bank = 90 - asin(pow(pow(sensor_event_.acceleration.x, 2) +
-                 pow(sensor_event_.acceleration.z, 2), 0.5)/g) *
-                         RAD_TO_DEG;
+  float accel_bank = acos(hypot(sensor_event_.acceleration.x,
+                                sensor_event_.acceleration.z) / g) *
+                     RAD_TO_DEG;
   if (sensor_event_.acceleration.y > 0) {accel_bank *= -1;}
 
 
-  float accel_attitude = 90 - asin(pow(pow(sensor_event_.acceleration.y, 2) +
-                 pow(sensor_event_.acceleration.z, 2), 0.5)/g) *
+  float accel_attitude = acos(hypot(sensor_event_.acceleration.y,
+                                    sensor_event_.acceleration.z) / g) *
                          RAD_TO_DEG;
   if (sensor_event_.acceleration.x < 0) {accel_attitude *= -1;}
-
-  /*
-  float accel_heading = 90 - asin(pow(pow(sensor_event_.acceleration.x, 2) +
-                 pow(sensor_event_.acceleration.y, 2), 0.5)/g) *
-                         RAD_TO_DEG;
-  if (sensor_event_.acceleration.z > 0) {accel_heading *= -1;}
-  */
   ///////////////////////////////////////////////////////////////////////////
 
 
@@ -90,24 +83,23 @@ void Imu::UpdateOrientation() {
 
 
   /////////////////////////////// BANK ///////////////////////////////////////
-  all_data_.orientation.bank = (1-acclelerometerWeight) * (p.bank + kGyroscopeConversionFactor *
+  all_data_.orientation.bank = (1 - acclelerometerWeight) * (p.bank + kGyroscopeConversionFactor *
                       gyro_.g.x * dt) + acclelerometerWeight * accel_bank;
   ////////////////////////////////////////////////////////////////////////////
 
   
   /////////////////////////////// ATTITUDE ///////////////////////////////////
-  all_data_.orientation.attitude = (1-acclelerometerWeight) * 
-  (p.attitude + kGyroscopeConversionFactor * dt * 
-  (gyro_.g.y * cos(p.bank / RAD_TO_DEG) + gyro_.g.z * 
-  sin(p.bank / RAD_TO_DEG))) + acclelerometerWeight * accel_attitude;
+  all_data_.orientation.attitude = (1 - acclelerometerWeight) * (p.attitude + kGyroscopeConversionFactor *
+                      (gyro_.g.y * cos(p.bank / RAD_TO_DEG) * dt + gyro_.g.z * 
+                      sin(p.bank / RAD_TO_DEG))) + acclelerometerWeight * accel_attitude;
   ////////////////////////////////////////////////////////////////////////////
  
 
   /////////////////////////////// HEADING ////////////////////////////////////
   // has event.magnetic.(x|y|z) in uT
   mag_.getEvent(&sensor_event_);
-  all_data_.orientation.heading = atan2((sensor_event_.magnetic.y+kMagnetometerYOffset) / cos(p.bank / RAD_TO_DEG), 
-                               (sensor_event_.magnetic.x+kMagnetometerXOffset) / cos(p.attitude / RAD_TO_DEG)) *
+  all_data_.orientation.heading = atan2((sensor_event_.magnetic.y + kMagnetometerYOffset) / cos(p.bank / RAD_TO_DEG), 
+                               (sensor_event_.magnetic.x + kMagnetometerXOffset) / cos(p.attitude / RAD_TO_DEG)) *
                                RAD_TO_DEG;
   ////////////////////////////////////////////////////////////////////////////
 }
