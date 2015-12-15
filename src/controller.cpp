@@ -6,14 +6,12 @@ Controller::Controller(Imu* imu) : imu_(imu) {
   escBR.attach(escBRPin, kMinPulseWidth, kMaxPulseWidth);
   escBL.attach(escBLPin, kMinPulseWidth, kMaxPulseWidth);
 
-  last_heading_ = imu_->GetHeading();
+  imu_->GetHeading(last_heading_);
 }
 
 void Controller::SetCommands(ControllerCommands& commands) {
-  commands_.yaw = commands.yaw;
-  commands_.attitude = commands.attitude;
-  commands_.bank = commands.bank;
-  commands_.throttle = commands.throttle;
+  last_commands_ = commands_;
+  memcpy(&commands_, &commands, sizeof(ControllerCommands));
 }
 
 void Controller::Update() {
@@ -46,22 +44,28 @@ void Controller::Update() {
   attitude_error_sum_ += current_error.attitude;
   bank_error_sum_ += current_error.bank;
 
+  yaw_error_sum_ = constrain(yaw_error_sum_, -kMaxYawITerm, kMaxYawITerm);
+  attitude_error_sum_ = constrain(attitude_error_sum_, -kMaxAttitudeITerm, kMaxAttitudeITerm);
+  bank_error_sum_ = constrain(bank_error_sum_, -kMaxBankITerm, kMaxBankITerm);
+
   // calculate error derivative
-  float attitude_error_diff = (current_error.attitude - attitude_error_last_) / dt;
-  float bank_error_diff = (current_error.bank - bank_error_last_) / dt;
+  float attitude_error_diff = ((current_error.attitude - attitude_error_last_)
+                               + (commands_.attitude - last_commands_.attitude)) / dt;
+  float bank_error_diff = ((current_error.bank - bank_error_last_)
+                           + (commands_.bank - last_commands_.bank)) / dt;
   attitude_error_last_ = current_error.attitude;
   bank_error_last_ = current_error.bank;
 
   //determind quad adjustments (in % throttle)
   float thr = commands_.throttle * kThrottleScaling;
-  float y_adj = kP_yaw * current_yaw_error +
-                kI_yaw * yaw_error_sum_;
-  float a_adj = kP_attitude * current_error.attitude +
-                kI_attitude * attitude_error_sum_ + 
-                kD_attitude * attitude_error_diff;
-  float b_adj = kP_bank * current_error.bank +
-                kI_bank * bank_error_sum_ + 
-                kD_bank * bank_error_diff;
+  float y_adj = kP_yaw * current_yaw_error
+              + kI_yaw * yaw_error_sum_;
+  float a_adj = kP_attitude * current_error.attitude
+              + kI_attitude * attitude_error_sum_
+              - kD_attitude * attitude_error_diff;
+  float b_adj = kP_bank * current_error.bank
+              + kI_bank * bank_error_sum_
+              - kD_bank * bank_error_diff;
 
   // Serial.print(thr);
   // Serial.print("\t");
@@ -71,7 +75,7 @@ void Controller::Update() {
   // Serial.print("\t");
   // Serial.print(b_adj);
   // Serial.print("\t");
-  
+
   //determine ESC pulse widths
   float escFRVal = mapf(thr * (1 + y_adj + a_adj + b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth);
   float escFLVal = mapf(thr * (1 - y_adj + a_adj - b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth);

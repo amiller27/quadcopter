@@ -36,6 +36,10 @@ class Controller {
   const static float kI_bank = 0;
   const static float kD_bank = 0;
 
+  const static float kMaxYawITerm = 360;
+  const static float kMaxAttitudeITerm = 180;
+  const static float kMaxBankITerm = 180;
+
   //Throttle scaling. 50% throttle scaling is 0.5
   //WARNING: Setting throttle scaling to or close to 1.0 (100%) might 
   //         inhibit manuverability at high throttle values!!!
@@ -53,6 +57,7 @@ class Controller {
 
   // Commands
   ControllerCommands commands_;
+  ControllerCommands last_commands_;
 
   // Orientation
   Imu* imu_;
