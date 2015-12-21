@@ -80,8 +80,13 @@ void Imu::UpdateOrientation() {
                  sq(sensor_event_.acceleration.y) +
                  sq(sensor_event_.acceleration.z));
   
+<<<<<<< HEAD
+  float accel_bank = 90 - asin(pow(pow(sensor_event_.acceleration.x, 2) +
+                     pow(sensor_event_.acceleration.z, 2), 0.5)/g) *
+=======
   float accel_bank = acos(hypot(sensor_event_.acceleration.x,
                                 sensor_event_.acceleration.z) / g) *
+>>>>>>> 8d5cee28af6a5a0d1c9e37dcbaa10d3273a00032
                      RAD_TO_DEG;
   if (sensor_event_.acceleration.y > 0) {accel_bank *= -1;}
 
@@ -90,7 +95,7 @@ void Imu::UpdateOrientation() {
                                     sensor_event_.acceleration.z) / g) *
                          RAD_TO_DEG;
   if (sensor_event_.acceleration.x < 0) {accel_attitude *= -1;}
-
+  ///////////////////////////////////////////////////////////////////////////
 
 
   //////////////////////////////// GYROSCOPE ////////////////////////////////
@@ -117,11 +122,19 @@ void Imu::UpdateOrientation() {
                       gyro_.g.x * dt) + acclelerometerWeight * accel_bank;
   ////////////////////////////////////////////////////////////////////////////
 
+  float sBank = sin(p.bank / RAD_TO_DEG);
+  float cBank = cos(p.bank / RAD_TO_DEG);
   
   /////////////////////////////// ATTITUDE ///////////////////////////////////
+<<<<<<< HEAD
   all_data_.orientation.attitude = (1-acclelerometerWeight) * 
   (p.attitude + kGyroscopeConversionFactor * dt * 
   (gyro_.g.y * cBank + gyro_.g.z * sBank)) + acclelerometerWeight * accel_attitude;
+=======
+  all_data_.orientation.attitude = (1 - acclelerometerWeight) * (p.attitude + kGyroscopeConversionFactor *
+                      (gyro_.g.y * cos(p.bank / RAD_TO_DEG) * dt + gyro_.g.z * 
+                      sin(p.bank / RAD_TO_DEG))) + acclelerometerWeight * accel_attitude;
+>>>>>>> 8d5cee28af6a5a0d1c9e37dcbaa10d3273a00032
   ////////////////////////////////////////////////////////////////////////////
  
   float sAttitude = sin(p.attitude / RAD_TO_DEG);
@@ -130,6 +143,7 @@ void Imu::UpdateOrientation() {
   /////////////////////////////// HEADING ////////////////////////////////////
   // has event.magnetic.(x|y|z) in uT
   mag_.getEvent(&sensor_event_);
+<<<<<<< HEAD
   sensor_event_.magnetic.x+=kMagnetometerXOffset;
   sensor_event_.magnetic.y+=kMagnetometerYOffset;
   sensor_event_.magnetic.z+=kMagnetometerZOffset;
@@ -148,6 +162,11 @@ void Imu::UpdateOrientation() {
   } else if (all_data_.orientation.heading < -180) {
     all_data_.orientation.heading += 360;
   }
+=======
+  all_data_.orientation.heading = atan2((sensor_event_.magnetic.y + kMagnetometerYOffset) / cos(p.bank / RAD_TO_DEG), 
+                               (sensor_event_.magnetic.x + kMagnetometerXOffset) / cos(p.attitude / RAD_TO_DEG)) *
+                               RAD_TO_DEG;
+>>>>>>> 8d5cee28af6a5a0d1c9e37dcbaa10d3273a00032
   ////////////////////////////////////////////////////////////////////////////
 }
 

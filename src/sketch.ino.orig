@@ -37,6 +37,10 @@ void setup() {
   current_time = millis();
 }
 
+uint16_t last_time = 0;
+uint32_t count = 0;
+uint32_t dt = 0;
+
 void loop() {
   int voltage = map(analogRead(voltagePin), 0, 1024, 0, 12600); //in mV
   if (voltage < 9000) { // low voltage
@@ -54,8 +58,9 @@ void loop() {
   receiver->GetMode(mode);
   receiver->GetCommands(commands);
 
-  imu->UpdateAll();
+  imu->UpdateOrientation();
 
+<<<<<<< HEAD
 /*
   Serial.print(mode);
   Serial.print(F("\t"));
@@ -70,6 +75,29 @@ void loop() {
   Serial.print(commands.bank, 10);
   Serial.print(F("\t"));
 */
+=======
+  uint16_t t = micros();
+  dt += t - last_time;
+  last_time = t;
+
+  if ((count++)%100 == 0) {
+    Serial.println(dt);
+    dt = 0;
+  }
+
+  // Serial.print(mode);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.aggressiveness, 10);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.throttle, 10);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.yaw, 10);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.attitude, 10);
+  // Serial.print(F("\t"));
+  // Serial.print(commands.bank, 10);
+  // Serial.print(F("\t"));
+>>>>>>> 8d5cee28af6a5a0d1c9e37dcbaa10d3273a00032
 
   radio_controller->Update();
   controller->Update();
@@ -83,6 +111,7 @@ void loop() {
   //Serial.println(dt);
 }
 
+<<<<<<< HEAD
 void updateLed() {
   if (millis() % (ledTimeOn + ledTimeOff) < ledTimeOn) {
     digitalWrite(ledPin, HIGH);
@@ -90,3 +119,6 @@ void updateLed() {
     digitalWrite(ledPin, LOW);
   }
 }
+=======
+}
+>>>>>>> 8d5cee28af6a5a0d1c9e37dcbaa10d3273a00032

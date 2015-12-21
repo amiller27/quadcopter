@@ -43,37 +43,42 @@ void Controller::Update() {
   
   // update current error
   Orientation current_error;
-  current_error.heading = commands_.heading - current_orientation_.heading;
-  if (current_error.heading > 180) {
-    current_error.heading -= 360;
-  }
-  else if (current_error.heading < -180) {
-    current_error.heading += 360;
-  }
+  float current_yaw_error = commands_.yaw - (current_orientation_.heading - last_heading_) / dt * 1000000;
 
   current_error.attitude = commands_.attitude + current_orientation_.attitude;
   current_error.bank = commands_.bank - current_orientation_.bank;
 
-  heading_error_sum += current_error.heading * dt;
-  attitude_error_sum += current_error.attitude * dt;
-  bank_error_sum += current_error.bank * dt;
+  yaw_error_sum_ += current_yaw_error * dt;
+  attitude_error_sum_ += current_error.attitude * dt;
+  bank_error_sum_ += current_error.bank * dt;
 
-  /*
-  attitude_error_sum = constrain(attitude_error_sum, -180, 180);
-  bank_error_sum = constrain(bank_error_sum, -180, 180);
-  */
+  yaw_error_sum_ = constrain(yaw_error_sum_, -kMaxYawITerm, kMaxYawITerm);
+  attitude_error_sum_ = constrain(attitude_error_sum_, -kMaxAttitudeITerm, kMaxAttitudeITerm);
+  bank_error_sum_ = constrain(bank_error_sum_, -kMaxBankITerm, kMaxBankITerm);
+
+  // calculate error derivative
+  float attitude_error_diff = ((current_error.attitude - attitude_error_last_)
+                               + (commands_.attitude - last_commands_.attitude)) / dt;
+  float bank_error_diff = ((current_error.bank - bank_error_last_)
+                           + (commands_.bank - last_commands_.bank)) / dt;
+  attitude_error_last_ = current_error.attitude;
+  bank_error_last_ = current_error.bank;
 
   //determind quad adjustments (in % throttle)
   float thr = commands_.throttle * kThrottleScaling;
-  float h_adj = kP_heading * current_error.heading +
-                             kI_heading * heading_error_sum;
-  float a_adj = kP_attitude * current_error.attitude +
-                              kI_attitude * attitude_error_sum;
-  float b_adj = kP_bank * current_error.bank +
-                          kI_bank * bank_error_sum;
+  float y_adj = kP_yaw * current_yaw_error
+              + kI_yaw * yaw_error_sum_;
+  float a_adj = kP_attitude * current_error.attitude
+              + kI_attitude * attitude_error_sum_
+              - kD_attitude * attitude_error_diff;
+  float b_adj = kP_bank * current_error.bank
+              + kI_bank * bank_error_sum_
+              - kD_bank * bank_error_diff;
+
+
 
   //determine ESC pulse widths
- /*
+  /*
   Serial.print(thr);
   Serial.print("\t");
   Serial.print(h_adj);

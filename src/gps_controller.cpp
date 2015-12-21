@@ -112,7 +112,7 @@ void GpsController::Update() {
     error_heading += 360;
   }
 
-  controller_commands_.heading = target_heading;
+  controller_commands_.yaw = kP_Heading * error_heading;
 
   ///////////////////////////////////////////////
 
@@ -124,8 +124,8 @@ void GpsController::Update() {
 
   accumulated_error_right_ += error_right * dt;
 
-  float correction_right = kTiltRightP * error_right +
-                           kTiltRightI * accumulated_error_right_;
+  float correction_right = kP_TiltRight * error_right +
+                           kI_TiltRight * accumulated_error_right_;
 
   controller_commands_.bank = correction_right < 0 ?
     max(correction_right, -kMaxBank) :

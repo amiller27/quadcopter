@@ -12,9 +12,8 @@ void RadioController::Update() {
   float dt = (current_time - last_time_) / 1000000.0; // in s
   last_time_ = current_time;
 
-  output_commands_.heading += 2*(commands_.yaw - 0.5) * dt *
-                           commands_.aggressiveness * kMaxHeadingChange;
-  output_commands_.heading = fmod(output_commands_.heading + 360, 360);
+  output_commands_.yaw = 2*(commands_.yaw - 0.5) * dt *
+                         commands_.aggressiveness * kMaxHeadingChange;
   output_commands_.attitude = 2*(commands_.attitude - 0.5) * commands_.aggressiveness *
                            kMaxPitchRollAngle;
   output_commands_.bank = 2*(commands_.bank - 0.5) * commands_.aggressiveness * 

@@ -36,12 +36,13 @@ class GpsController {
   static const int kGpsRxPin = A0; // Rx on GPS, Tx on Arduino
 
   // PID constants
-  static const float kTiltFrontP = 1;
-  static const float kTiltFrontI = 1;
-  static const float kTiltRightP = 1;
-  static const float kTiltRightI = 1;
-  static const float kThrottleP = 1;
-  static const float kThrottleI = 1;
+  static const float kP_Heading = 1;
+  static const float kP_TiltFront = 1;
+  static const float kI_TiltFront = 0;
+  static const float kP_TiltRight = 1;
+  static const float kI_TiltRight = 0;
+  static const float kP_Throttle = 1;
+  static const float kI_Throttle = 0;
 
   // Target Speeds
   static const float kTargetHorizontalSpeed = 20; // in knots

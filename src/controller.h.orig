@@ -25,6 +25,19 @@ class Controller {
   
  private:
   //PID constants
+<<<<<<< HEAD
+  const static float kP_heading = 0;
+  const static float kI_heading = 0;
+
+  const static float kP_attitude = 0.0012;
+  const static float kI_attitude = 0.0007;
+
+  const static float kP_bank = 0.0012;
+  const static float kI_bank = 0.0007;
+
+  //kI and kP balanced. Both values may have been too low. Return to tuning by
+  //gradually increasing both
+=======
   const static float kP_yaw = 0.001;
   const static float kI_yaw = 0;
 
@@ -39,10 +52,18 @@ class Controller {
   const static float kMaxYawITerm = 360;
   const static float kMaxAttitudeITerm = 180;
   const static float kMaxBankITerm = 180;
+>>>>>>> 8d5cee28af6a5a0d1c9e37dcbaa10d3273a00032
 
   //Throttle scaling. 50% throttle scaling is 0.5
   //WARNING: Setting throttle scaling to or close to 1.0 (100%) might 
   //         inhibit manuverability at high throttle values!!!
+<<<<<<< HEAD
+  const static float kThrottleScaling = 0.75;
+
+  unsigned long dt;
+  unsigned long last_frame;
+  unsigned long this_frame;
+=======
   const static float kThrottleScaling = 0.8;
 
   float last_heading_;
@@ -50,6 +71,7 @@ class Controller {
   float yaw_error_sum_ = 0;
   float attitude_error_sum_ = 0;
   float bank_error_sum_ = 0;
+>>>>>>> 8d5cee28af6a5a0d1c9e37dcbaa10d3273a00032
 
   float attitude_error_last_ = 0;
   float bank_error_last_ = 0;
