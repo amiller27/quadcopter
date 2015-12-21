@@ -19,10 +19,11 @@ struct ImuData {
 
 class Imu {
  public:
-  Imu();
+  Imu(bool &successful);
   ~Imu();
 
-  void GetHeading(float& out);
+  void CalibrateMagnetometer(int cycles);
+  void UpdateHeading();
   void UpdateOrientation();
   void GetHeading(float& out);
   void GetOrientation(Orientation& out);
@@ -45,7 +46,8 @@ class Imu {
   static const float kMagnetometerXOffset = 25; // in uT
   static const float kMagnetometerYOffset = 10; // in uT
   static const float kMagnetometerZOffset = -5; // in uT
-  static const float kMagneticDeclination = -0.20624; // in radians
+
+  float heading_offset;
 
   //gyroscope
   static const float kGyroscopeConversionFactor = 0.0087491; // in (deg/s)/LSB
@@ -53,9 +55,6 @@ class Imu {
 
   //accelerometer
   Adafruit_ADXL345_Unified accel_ = Adafruit_ADXL345_Unified(12345);
-  static const float kAccelXOffset = 0; //in deg
-  static const float kAccelYOffset = 0; //in deg
-  static const float kAccelZOffset = 0; //in deg
   
   //barometer
   Adafruit_BMP085_Unified baro_ = Adafruit_BMP085_Unified(12345);

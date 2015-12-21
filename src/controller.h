@@ -25,27 +25,26 @@ class Controller {
   
  private:
   //PID constants
-  const static float kP_heading = 0.001;
+  const static float kP_heading = 0;
   const static float kI_heading = 0;
 
-  const static float kP_attitude = 0.001;
-  const static float kI_attitude = 0;
+  const static float kP_attitude = 0.0012;
+  const static float kI_attitude = 0.0007;
 
-  const static float kP_bank = 0.001;
-  const static float kI_bank = 0;
+  const static float kP_bank = 0.0012;
+  const static float kI_bank = 0.0007;
+
+  //kI and kP balanced. Both values may have been too low. Return to tuning by
+  //gradually increasing both
 
   //Throttle scaling. 50% throttle scaling is 0.5
   //WARNING: Setting throttle scaling to or close to 1.0 (100%) might 
   //         inhibit manuverability at high throttle values!!!
-  const static float kThrottleScaling = 0.8;
+  const static float kThrottleScaling = 0.75;
 
-  //I-Term history
-  // const static int error_hisory = 2;
-  // int error_index;
-
-  // float heading_error_values[error_hisory];
-  // float attitude_error_values[error_hisory];
-  // float bank_error_values[error_hisory];
+  unsigned long dt;
+  unsigned long last_frame;
+  unsigned long this_frame;
 
   float heading_error_sum;
   float attitude_error_sum;

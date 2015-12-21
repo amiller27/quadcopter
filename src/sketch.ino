@@ -1,5 +1,4 @@
 #include "rc_receiver.h"
-<<<<<<< Updated upstream
 #include "controller.h"
 #include "imu.h"
 #include "radio_controller.h"
@@ -16,22 +15,48 @@ GpsController* gps_controller;
 
 Imu* imu;
 
+const int voltagePin = A2;
+const int ledPin = 13;
+
+int ledTimeOn;  //in us
+int ledTimeOff; //in us
+
+bool successful_setup;
+
+int current_time;
+
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(115200);
+  delay(1000);
   receiver = RcReceiver::Create();
-  imu = new Imu();
+  imu = new Imu(successful_setup);
   controller = new Controller(imu);
   radio_controller = new RadioController(controller, receiver);
   gps_controller = GpsController::Create(controller, imu);
+  pinMode(13, OUTPUT);
+  current_time = millis();
 }
 
 void loop() {
+  int voltage = map(analogRead(voltagePin), 0, 1024, 0, 12600); //in mV
+  if (voltage < 9000) { // low voltage
+    ledTimeOn = 500;
+    ledTimeOff = 1000;
+  } else if (!successful_setup) { // error 
+    ledTimeOn = 100;
+    ledTimeOff = 100;
+  } else { // normal operation
+    ledTimeOn = 1000;
+    ledTimeOff = 0;
+  }
+
   receiver->Update();
   receiver->GetMode(mode);
   receiver->GetCommands(commands);
 
-  imu->UpdateAll();
+  imu->UpdateOrientation();
 
+/*
   Serial.print(mode);
   Serial.print(F("\t"));
   Serial.print(commands.aggressiveness, 10);
@@ -44,44 +69,24 @@ void loop() {
   Serial.print(F("\t"));
   Serial.print(commands.bank, 10);
   Serial.print(F("\t"));
+*/
 
   radio_controller->Update();
   controller->Update();
-
-  Serial.println();
-}
-=======
-#include "CustomServo.h"
-
-RcReceiver* recevier;
-
-Servo esc1;
-Servo esc2;
-Servo esc3;
-Servo esc4;
-
-void setup() {
-  receiver = RcReceiver::Create();
-  esc1.attach(8);
-  esc2.attach(9);
-  esc3.attach(10);
-  esc4.attach(11);
+  //Serial.println();
+  //Serial.print("Voltage:  ");
+  //Serial.println(voltage);
+  //int new_time = millis();
+  //int dt = new_time - current_time;
+  //current_time = new_time;
+  //Serial.print("dt:  ");
+  //Serial.println(dt);
 }
 
-RcCommands commands;
-void loop() {
-  receiver->Update();
-  receiver->GetCommands(commands);
-  int throttle;
-  if (commands.throttle < .5) {
-    throttle = 1000;
+void updateLed() {
+  if (millis() % (ledTimeOn + ledTimeOff) < ledTimeOn) {
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
   }
-  else {
-    throttle = 2000;
-  }
-  esc1.writeMicroseconds(throttle);
-  esc2.writeMicroseconds(throttle);
-  esc3.writeMicroseconds(throttle);
-  esc4.writeMicroseconds(throttle);
 }
->>>>>>> Stashed changes

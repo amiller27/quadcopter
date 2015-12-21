@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-Imu::Imu() {
+Imu::Imu(bool &successful) {
 
   int error = 0;
 
@@ -33,29 +33,56 @@ Imu::Imu() {
     error = 4;
   }
 
-  while (error) {
+  successful = true;
+  if (error) {
+    Serial.print("Error in Imu:Imu(). Error Code: ");
     Serial.println(error);
-    delay(100);
+    successful = false;
   }
 
   last_sensor_time = micros();
   all_data_.orientation.bank=0;
   all_data_.orientation.attitude=0;
   all_data_.orientation.heading=0;
+  CalibrateMagnetometer(5);
+}
+
+void Imu::CalibrateMagnetometer(int cycles) {
+  float magX = 0;
+  float magY = 0;
+
+  for (int i = 0; i<cycles; i++) {
+    mag_.getEvent(&sensor_event_);
+    magX += sensor_event_.magnetic.x+kMagnetometerXOffset;
+    magY += sensor_event_.magnetic.y+kMagnetometerYOffset;
+    Serial.print(F("X: "));
+    Serial.print(magX);
+    Serial.print(F("\tY: "));
+    Serial.println(magY);
+  }
+  magX /= cycles;
+  magY /= cycles;
+
+  heading_offset = -atan2(-magX, magY) * RAD_TO_DEG;
+  Serial.print(F("Heading Offset: "));
+  Serial.println(heading_offset, 3);
 }
 
 void Imu::UpdateOrientation() {
   ///////////////////////////// ACCELEROMETER ///////////////////////////////
   // has event.acceleration.(x|y|z) in m/s^2
   accel_.getEvent(&sensor_event_);
+  float temp = sensor_event_.acceleration.x;
+  sensor_event_.acceleration.x = sensor_event_.acceleration.y;
+  sensor_event_.acceleration.y = -1 * temp;
 
   float g = pow(pow(sensor_event_.acceleration.x, 2) +
                 pow(sensor_event_.acceleration.y, 2) +
                 pow(sensor_event_.acceleration.z, 2), 0.5);
   
   float accel_bank = 90 - asin(pow(pow(sensor_event_.acceleration.x, 2) +
-                 pow(sensor_event_.acceleration.z, 2), 0.5)/g) *
-                         RAD_TO_DEG;
+                     pow(sensor_event_.acceleration.z, 2), 0.5)/g) *
+                     RAD_TO_DEG;
   if (sensor_event_.acceleration.y > 0) {accel_bank *= -1;}
 
 
@@ -76,6 +103,9 @@ void Imu::UpdateOrientation() {
   //////////////////////////////// GYROSCOPE ////////////////////////////////
   // has gyro_.g.(x|y|z), which all need to be converted
   gyro_.read();
+  temp = gyro_.g.x;
+  gyro_.g.x = gyro_.g.y;
+  gyro_.g.y = -1 * temp;
   ///////////////////////////////////////////////////////////////////////////  
 
   Orientation p = all_data_.orientation;
@@ -94,21 +124,39 @@ void Imu::UpdateOrientation() {
                       gyro_.g.x * dt) + acclelerometerWeight * accel_bank;
   ////////////////////////////////////////////////////////////////////////////
 
+  float sBank = sin(p.bank / RAD_TO_DEG);
+  float cBank = cos(p.bank / RAD_TO_DEG);
   
   /////////////////////////////// ATTITUDE ///////////////////////////////////
   all_data_.orientation.attitude = (1-acclelerometerWeight) * 
   (p.attitude + kGyroscopeConversionFactor * dt * 
-  (gyro_.g.y * cos(p.bank / RAD_TO_DEG) + gyro_.g.z * 
-  sin(p.bank / RAD_TO_DEG))) + acclelerometerWeight * accel_attitude;
+  (gyro_.g.y * cBank + gyro_.g.z * sBank)) + acclelerometerWeight * accel_attitude;
   ////////////////////////////////////////////////////////////////////////////
  
+  float sAttitude = sin(p.attitude / RAD_TO_DEG);
+  float cAttitude = cos(p.attitude / RAD_TO_DEG);
 
   /////////////////////////////// HEADING ////////////////////////////////////
   // has event.magnetic.(x|y|z) in uT
   mag_.getEvent(&sensor_event_);
-  all_data_.orientation.heading = atan2((sensor_event_.magnetic.y+kMagnetometerYOffset) / cos(p.bank / RAD_TO_DEG), 
-                               (sensor_event_.magnetic.x+kMagnetometerXOffset) / cos(p.attitude / RAD_TO_DEG)) *
-                               RAD_TO_DEG;
+  sensor_event_.magnetic.x+=kMagnetometerXOffset;
+  sensor_event_.magnetic.y+=kMagnetometerYOffset;
+  sensor_event_.magnetic.z+=kMagnetometerZOffset;
+  temp = sensor_event_.magnetic.x;
+  sensor_event_.magnetic.x = sensor_event_.magnetic.y;
+  sensor_event_.magnetic.y = -1 * temp;
+
+  all_data_.orientation.heading = atan2(cBank*sensor_event_.magnetic.y - 
+                                        sBank*sensor_event_.magnetic.z,
+                                        cAttitude*sensor_event_.magnetic.x +
+                                        sBank*sAttitude*sensor_event_.magnetic.y +                                        
+                                        cBank*sAttitude*sensor_event_.magnetic.z) * RAD_TO_DEG +
+                                        heading_offset;
+  if (all_data_.orientation.heading > 180) {
+    all_data_.orientation.heading -= 360;
+  } else if (all_data_.orientation.heading < -180) {
+    all_data_.orientation.heading += 360;
+  }
   ////////////////////////////////////////////////////////////////////////////
 }
 
@@ -120,6 +168,14 @@ void Imu::GetOrientation(Orientation& out) {
   out.bank = all_data_.orientation.bank;
   out.attitude = all_data_.orientation.attitude;
   out.heading = all_data_.orientation.heading;
+  /*
+  Serial.print("H:  ");
+  Serial.print(all_data_.orientation.heading);
+  Serial.print("\tA:  ");
+  Serial.print(all_data_.orientation.attitude);
+  Serial.print("\tB:  ");
+  Serial.print(all_data_.orientation.bank);
+  */
 }
 
 void Imu::UpdateAll() {
