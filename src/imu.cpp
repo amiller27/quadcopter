@@ -116,6 +116,9 @@ void Imu::UpdateOrientation() {
   all_data_.orientation.bank = (1 - acclelerometerWeight) * (p.bank + kGyroscopeConversionFactor *
                       gyro_.g.x * dt) + acclelerometerWeight * accel_bank;
   ////////////////////////////////////////////////////////////////////////////
+  
+  float sBank = sin(p.bank / RAD_TO_DEG);
+  float cBank = cos(p.bank / RAD_TO_DEG);
 
   
   /////////////////////////////// ATTITUDE ///////////////////////////////////
@@ -159,14 +162,12 @@ void Imu::GetOrientation(Orientation& out) {
   out.bank = all_data_.orientation.bank;
   out.attitude = all_data_.orientation.attitude;
   out.heading = all_data_.orientation.heading;
-  /*
   Serial.print("H:  ");
   Serial.print(all_data_.orientation.heading);
   Serial.print("\tA:  ");
   Serial.print(all_data_.orientation.attitude);
   Serial.print("\tB:  ");
   Serial.print(all_data_.orientation.bank);
-  */
 }
 
 void Imu::UpdateAll() {

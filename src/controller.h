@@ -25,7 +25,7 @@ class Controller {
   
  private:
   //PID constants
-  const static float kP_yaw = 0.001;
+  const static float kP_yaw = 0;
   const static float kI_yaw = 0;
 
   const static float kP_attitude = 0.001;
@@ -53,7 +53,9 @@ class Controller {
 
   float attitude_error_last_ = 0;
   float bank_error_last_ = 0;
-  uint32_t last_time_ = 0;
+  uint32_t dt_ = 0;
+  uint32_t this_frame_ = 0;
+  uint32_t last_frame_ = 0;
 
   // Commands
   ControllerCommands commands_;

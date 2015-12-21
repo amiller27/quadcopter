@@ -26,7 +26,7 @@ bool successful_setup;
 int current_time;
 
 void setup() {
-  //Serial.begin(115200);
+  Serial.begin(115200);
   delay(1000);
   receiver = RcReceiver::Create();
   imu = new Imu(successful_setup);
