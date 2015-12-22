@@ -18,8 +18,15 @@ float tan(float x) {
 }
 
 float acos(float x) {
+  //Serial.print("\tx: ");
+  //Serial.print(x);
+  if (x >= 1) {
+    return 0;
+  }
   // two term power series approximation
   float sqrt_2y = sqrt(2 * (1 - x));
+  //Serial.print("\tsqrt:");
+  //Serial.print(sqrt_2y);
   return sqrt_2y + (sqrt_2y * sqrt_2y * sqrt_2y) / 24;
 }
 

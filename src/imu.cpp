@@ -1,6 +1,7 @@
 #include "imu.h"
 
 #include <math.h>
+#include <float.h>
 
 Imu::Imu(bool &successful) {
 
@@ -79,17 +80,23 @@ void Imu::UpdateOrientation() {
   float g = sqrt(sq(sensor_event_.acceleration.x) +
                  sq(sensor_event_.acceleration.y) +
                  sq(sensor_event_.acceleration.z));
+  if (g==0) {
+    g = FLT_MIN;
+  }
   
   float accel_bank = acos(hypot(sensor_event_.acceleration.x,
                                 sensor_event_.acceleration.z) / g) *
                      RAD_TO_DEG;
   if (sensor_event_.acceleration.y > 0) {accel_bank *= -1;}
-
+  //Serial.print("ab: ");
+  //Serial.print(accel_bank);
 
   float accel_attitude = acos(hypot(sensor_event_.acceleration.y,
                                     sensor_event_.acceleration.z) / g) *
                          RAD_TO_DEG;
   if (sensor_event_.acceleration.x < 0) {accel_attitude *= -1;}
+  //Serial.print("\taa: ");
+  //Serial.print(accel_attitude);
 
 
 
@@ -108,6 +115,10 @@ void Imu::UpdateOrientation() {
   last_sensor_time = current;
 
   dt /= 1000000; //convert dt to seconds for sensor compatibility
+
+  if (dt == 0) {
+    dt = 0.005;
+  }
   //Serial.print(F("dt: "));
   //Serial.println(dt, 5);
 
@@ -159,15 +170,16 @@ void Imu::GetHeading(float& out) {
 }
 
 void Imu::GetOrientation(Orientation& out) {
-  out.bank = all_data_.orientation.bank;
+  out.bank = all_data_.orientation.bank + accel_bank_offset_;
   out.attitude = all_data_.orientation.attitude;
   out.heading = all_data_.orientation.heading;
-  Serial.print("H:  ");
-  Serial.print(all_data_.orientation.heading);
-  Serial.print("\tA:  ");
-  Serial.print(all_data_.orientation.attitude);
-  Serial.print("\tB:  ");
-  Serial.print(all_data_.orientation.bank);
+  //Serial.print("\tH:  ");
+  //Serial.print(out.heading);
+  //Serial.print("\tA:  ");
+  //Serial.print(out.attitude);
+  //Serial.print("\tB:  ");
+  //Serial.print(out.bank);
+  //Serial.println();
 }
 
 void Imu::UpdateAll() {

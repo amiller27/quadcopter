@@ -1,16 +1,16 @@
 #include "controller.h"
 
-Controller::Controller(Imu* imu) : imu_(imu) {
-  yaw_error_sum_ = 0;
-  attitude_error_sum_ = 0;
-  bank_error_sum_ = 0;
+#include <float.h>
 
+Controller::Controller(Imu* imu) : imu_(imu) {
+  imu->GetHeading(last_heading_);
   /*
   escFR.attach(escFRPin);
   escFL.attach(escFLPin);
   escBR.attach(escBRPin);
   escBL.attach(escBLPin);
   */
+
   this_frame_ = 0;
   last_frame_ = 0;
 }
@@ -41,6 +41,10 @@ void Controller::Update() {
   dt_ = this_frame_ - last_frame_;
   last_frame_ = this_frame_;
   dt_ /= 1000000;
+
+  if (dt_ ==  0) {
+    dt_ = 0.005;
+  }
 
   Orientation current_orientation_;
   imu_->GetOrientation(current_orientation_);
@@ -80,23 +84,28 @@ void Controller::Update() {
               - kD_bank * bank_error_diff;
 
 
-
-  //determine ESC pulse widths
-  /*
+/*
+  Serial.print(F("thr: "));
   Serial.print(thr);
   Serial.print("\t");
+  Serial.print(F("y_ad: "));
   Serial.print(y_adj);
   Serial.print("\t");
+  Serial.print(F("a_ad: "));
   Serial.print(a_adj);
   Serial.print("\t");
+  Serial.print(F("b_ad: "));
   Serial.print(b_adj);
-  Serial.print("\t");
-  */
+  Serial.println();
+*/
+
+  //determine ESC pulse widths
   float escFRVal = constrain(mapf(thr * (1 - y_adj - a_adj - b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth), kMinPulseWidth, kMaxPulseWidth);
   float escFLVal = constrain(mapf(thr * (1 + y_adj - a_adj + b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth), kMinPulseWidth, kMaxPulseWidth);
   float escBRVal = constrain(mapf(thr * (1 + y_adj + a_adj - b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth), kMinPulseWidth, kMaxPulseWidth);
   float escBLVal = constrain(mapf(thr * (1 - y_adj + a_adj + b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth), kMinPulseWidth, kMaxPulseWidth);
 
+  /*
   Serial.print(F("FR:  "));
   Serial.print(escFRVal);
   Serial.print(F("\tFL:  "));
@@ -105,11 +114,13 @@ void Controller::Update() {
   Serial.print(escBRVal);
   Serial.print(F("\tBL:  "));
   Serial.print(escBLVal);
+  Serial.println();
+  */
 
-/*
+  /*
   escFR.writeMicroseconds(escFRVal);
   escFL.writeMicroseconds(escFLVal);
   escBR.writeMicroseconds(escBRVal);
   escBL.writeMicroseconds(escBLVal);
-*/
+  */
 }

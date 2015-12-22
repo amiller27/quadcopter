@@ -55,6 +55,7 @@ class Imu {
 
   //accelerometer
   Adafruit_ADXL345_Unified accel_ = Adafruit_ADXL345_Unified(12345);
+  static const float accel_bank_offset_ = 3.0;
   
   //barometer
   Adafruit_BMP085_Unified baro_ = Adafruit_BMP085_Unified(12345);

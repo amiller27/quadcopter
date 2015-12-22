@@ -24,10 +24,11 @@ int ledTimeOff; //in us
 bool successful_setup;
 
 int current_time;
+long total_time = 0;
+int i = 0;
 
 void setup() {
-  Serial.begin(115200);
-  delay(1000);
+  Serial.begin(9600);
   receiver = RcReceiver::Create();
   imu = new Imu(successful_setup);
   controller = new Controller(imu);
@@ -76,11 +77,16 @@ void loop() {
   //Serial.println();
   //Serial.print("Voltage:  ");
   //Serial.println(voltage);
-  //int new_time = millis();
-  //int dt = new_time - current_time;
-  //current_time = new_time;
-  //Serial.print("dt:  ");
-  //Serial.println(dt);
+  int new_time = millis();
+  total_time += new_time - current_time;
+  current_time = new_time;
+  if (i == 1000) {
+    Serial.print("dt:  ");
+    Serial.println(total_time);
+    total_time = 0;
+    i = 0;
+  }
+  i = i + 1;
 }
 
 void updateLed() {

@@ -28,11 +28,11 @@ class Controller {
   const static float kP_yaw = 0;
   const static float kI_yaw = 0;
 
-  const static float kP_attitude = 0.001;
+  const static float kP_attitude = 0.004;
   const static float kI_attitude = 0;
   const static float kD_attitude = 0;
 
-  const static float kP_bank = 0.001;
+  const static float kP_bank = 0.002;
   const static float kI_bank = 0;
   const static float kD_bank = 0;
 
@@ -53,7 +53,7 @@ class Controller {
 
   float attitude_error_last_ = 0;
   float bank_error_last_ = 0;
-  uint32_t dt_ = 0;
+  float dt_ = 0;
   uint32_t this_frame_ = 0;
   uint32_t last_frame_ = 0;
 
