@@ -34,6 +34,8 @@ Imu::Imu(bool &successful) {
     error = 4;
   }
 
+  TWBR = 24;
+
   successful = true;
   if (error) {
     Serial.print("Error in Imu:Imu(). Error Code: ");
