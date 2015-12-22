@@ -19,7 +19,7 @@
  #include "WProgram.h"
 #endif
 
-#include <CustomWire.h>
+#include <Wire.h>
 #include <limits.h>
 
 #include "Adafruit_HMC5883_U.h"

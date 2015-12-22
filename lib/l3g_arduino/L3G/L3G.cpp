@@ -1,5 +1,5 @@
 #include <L3G.h>
-#include <CustomWire.h>
+#include <Wire.h>
 #include <math.h>
 
 // Defines ////////////////////////////////////////////////////////////////
