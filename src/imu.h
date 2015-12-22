@@ -23,10 +23,10 @@ class Imu {
   ~Imu();
 
   void CalibrateMagnetometer(int cycles);
-  void UpdateHeading();
-  void UpdateOrientation();
+  void UpdateOrientation(bool update_heading);
   void GetHeading(float& out);
   void GetOrientation(Orientation& out);
+  void GetAltitude(float& out);
   void UpdateAll();
   void GetAllData(ImuData& out);
 
@@ -35,7 +35,7 @@ class Imu {
   ImuData all_data_;
 
   //complimentary filter constant
-  static const float acclelerometerWeight = 0.03; //out of 1
+  static const float accelerometerWeight = 0.03; //out of 1
 
   // SENSORS
 

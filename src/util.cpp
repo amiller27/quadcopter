@@ -2,22 +2,22 @@
 
 #include <math.h>
 
-float sin(float x) {
+float fast_sin(float x) {
   // two term power series approximation
   return x - (x*x*x)/6;
 }
 
-float cos(float x) {
+float fast_cos(float x) {
   // two term power series approximation 
   return 1 - (x*x)/2;
 }
 
-float tan(float x) {
+float fast_tan(float x) {
   // two term power series approximation 
   return x + (x*x*x)/3;
 }
 
-float acos(float x) {
+float fast_acos(float x) {
   //Serial.print("\tx: ");
   //Serial.print(x);
   if (x >= 1) {

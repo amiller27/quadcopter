@@ -69,10 +69,11 @@ void Imu::CalibrateMagnetometer(int cycles) {
   Serial.println(heading_offset, 3);
 }
 
-void Imu::UpdateOrientation() {
+void Imu::UpdateOrientation(bool update_heading) {
   ///////////////////////////// ACCELEROMETER ///////////////////////////////
   // has event.acceleration.(x|y|z) in m/s^2
   accel_.getEvent(&sensor_event_);
+
   float temp = sensor_event_.acceleration.x;
   sensor_event_.acceleration.x = sensor_event_.acceleration.y;
   sensor_event_.acceleration.y = -1 * temp;
@@ -84,16 +85,16 @@ void Imu::UpdateOrientation() {
     g = FLT_MIN;
   }
   
-  float accel_bank = acos(hypot(sensor_event_.acceleration.x,
-                                sensor_event_.acceleration.z) / g) *
+  float accel_bank = fast_acos(hypot(sensor_event_.acceleration.x,
+                                     sensor_event_.acceleration.z) / g) *
                      RAD_TO_DEG;
   if (sensor_event_.acceleration.y > 0) {accel_bank *= -1;}
   //Serial.print("ab: ");
   //Serial.print(accel_bank);
 
-  float accel_attitude = acos(hypot(sensor_event_.acceleration.y,
-                                    sensor_event_.acceleration.z) / g) *
-                         RAD_TO_DEG;
+  float accel_attitude = fast_acos(hypot(sensor_event_.acceleration.y,
+                                         sensor_event_.acceleration.z) / g) *
+                              RAD_TO_DEG;
   if (sensor_event_.acceleration.x < 0) {accel_attitude *= -1;}
   //Serial.print("\taa: ");
   //Serial.print(accel_attitude);
@@ -124,43 +125,45 @@ void Imu::UpdateOrientation() {
 
 
   /////////////////////////////// BANK ///////////////////////////////////////
-  all_data_.orientation.bank = (1 - acclelerometerWeight) * (p.bank + kGyroscopeConversionFactor *
-                      gyro_.g.x * dt) + acclelerometerWeight * accel_bank;
+  all_data_.orientation.bank = (1 - accelerometerWeight) * (p.bank + kGyroscopeConversionFactor *
+                      gyro_.g.x * dt) + accelerometerWeight * accel_bank;
   ////////////////////////////////////////////////////////////////////////////
   
-  float sBank = sin(p.bank / RAD_TO_DEG);
-  float cBank = cos(p.bank / RAD_TO_DEG);
+  float sBank = fast_sin(p.bank / RAD_TO_DEG);
+  float cBank = fast_cos(p.bank / RAD_TO_DEG);
 
   
   /////////////////////////////// ATTITUDE ///////////////////////////////////
-  all_data_.orientation.attitude = (1-acclelerometerWeight) * 
+  all_data_.orientation.attitude = (1-accelerometerWeight) *
   (p.attitude + kGyroscopeConversionFactor * dt * 
-  (gyro_.g.y * cBank + gyro_.g.z * sBank)) + acclelerometerWeight * accel_attitude;
+  (gyro_.g.y * cBank + gyro_.g.z * sBank)) + accelerometerWeight * accel_attitude;
   ////////////////////////////////////////////////////////////////////////////
  
-  float sAttitude = sin(p.attitude / RAD_TO_DEG);
-  float cAttitude = cos(p.attitude / RAD_TO_DEG);
+  float sAttitude = fast_sin(p.attitude / RAD_TO_DEG);
+  float cAttitude = fast_cos(p.attitude / RAD_TO_DEG);
 
   /////////////////////////////// HEADING ////////////////////////////////////
-  // has event.magnetic.(x|y|z) in uT
-  mag_.getEvent(&sensor_event_);
-  sensor_event_.magnetic.x+=kMagnetometerXOffset;
-  sensor_event_.magnetic.y+=kMagnetometerYOffset;
-  sensor_event_.magnetic.z+=kMagnetometerZOffset;
-  temp = sensor_event_.magnetic.x;
-  sensor_event_.magnetic.x = sensor_event_.magnetic.y;
-  sensor_event_.magnetic.y = -1 * temp;
+  if (update_heading) {
+    // has event.magnetic.(x|y|z) in uT
+    mag_.getEvent(&sensor_event_);
+    sensor_event_.magnetic.x+=kMagnetometerXOffset;
+    sensor_event_.magnetic.y+=kMagnetometerYOffset;
+    sensor_event_.magnetic.z+=kMagnetometerZOffset;
+    temp = sensor_event_.magnetic.x;
+    sensor_event_.magnetic.x = sensor_event_.magnetic.y;
+    sensor_event_.magnetic.y = -1 * temp;
 
-  all_data_.orientation.heading = atan2(cBank*sensor_event_.magnetic.y - 
-                                        sBank*sensor_event_.magnetic.z,
-                                        cAttitude*sensor_event_.magnetic.x +
-                                        sBank*sAttitude*sensor_event_.magnetic.y +                                        
-                                        cBank*sAttitude*sensor_event_.magnetic.z) * RAD_TO_DEG +
-                                        heading_offset;
-  if (all_data_.orientation.heading > 180) {
-    all_data_.orientation.heading -= 360;
-  } else if (all_data_.orientation.heading < -180) {
-    all_data_.orientation.heading += 360;
+    all_data_.orientation.heading = atan2(cBank*sensor_event_.magnetic.y - 
+                                          sBank*sensor_event_.magnetic.z,
+                                          cAttitude*sensor_event_.magnetic.x +
+                                          sBank*sAttitude*sensor_event_.magnetic.y +
+                                          cBank*sAttitude*sensor_event_.magnetic.z) * RAD_TO_DEG +
+                                          heading_offset;
+    if (all_data_.orientation.heading > 180) {
+      all_data_.orientation.heading -= 360;
+    } else if (all_data_.orientation.heading < -180) {
+      all_data_.orientation.heading += 360;
+    }
   }
   ////////////////////////////////////////////////////////////////////////////
 }
@@ -182,8 +185,12 @@ void Imu::GetOrientation(Orientation& out) {
   //Serial.println();
 }
 
+void Imu::GetAltitude(float& out) {
+  out = all_data_.altitude;
+}
+
 void Imu::UpdateAll() {
-  UpdateOrientation();
+  UpdateOrientation(true);
 
   baro_.getEvent(&sensor_event_);
   if (sensor_event_.pressure) {
@@ -193,7 +200,7 @@ void Imu::UpdateAll() {
     all_data_.altitude = baro_.pressureToAltitude(SENSORS_PRESSURE_SEALEVELHPA,
                                             sensor_event_.pressure);
   } else {
-    // barrometer error
+    // barometer error
     Serial.println(F("barometer error"));
   }
 }

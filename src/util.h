@@ -1,11 +1,11 @@
 #ifndef QUADCOPTER_UTIL_H_
 #define QUADCOPTER_UTIL_H_
 
-float sin(float);
-float cos(float);
-float tan(float);
+float fast_sin(float);
+float fast_cos(float);
+float fast_tan(float);
 
-float acos(float); // only good near 1
+float fast_acos(float); // only good near 1
 
 float mapf(float, float, float, float, float);
 

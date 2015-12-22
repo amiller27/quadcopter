@@ -2,7 +2,7 @@
 #include "controller.h"
 #include "imu.h"
 #include "radio_controller.h"
-#include "gps_controller.h"
+//#include "gps_controller.h"
 
 RcReceiver* receiver;
 OperationMode mode;
@@ -11,7 +11,7 @@ RcCommands commands;
 Controller* controller;
 
 RadioController* radio_controller;
-GpsController* gps_controller;
+//GpsController* gps_controller;
 
 Imu* imu;
 
@@ -24,8 +24,7 @@ int ledTimeOff; //in us
 bool successful_setup;
 
 int current_time;
-long total_time = 0;
-int i = 0;
+uint16_t i = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -33,29 +32,33 @@ void setup() {
   imu = new Imu(successful_setup);
   controller = new Controller(imu);
   radio_controller = new RadioController(controller, receiver);
-  gps_controller = GpsController::Create(controller, imu);
+  //gps_controller = GpsController::Create(controller, imu);
   pinMode(13, OUTPUT);
   current_time = millis();
 }
 
 void loop() {
-  int voltage = map(analogRead(voltagePin), 0, 1024, 0, 12600); //in mV
-  if (voltage < 9000) { // low voltage
-    ledTimeOn = 500;
-    ledTimeOff = 1000;
-  } else if (!successful_setup) { // error 
-    ledTimeOn = 100;
-    ledTimeOff = 100;
-  } else { // normal operation
-    ledTimeOn = 1000;
-    ledTimeOff = 0;
+  if (i%100 == 0) {
+    int voltage = map(analogRead(voltagePin), 0, 1024, 0, 12600); //in mV
+    if (voltage < 9000) { // low voltage
+      ledTimeOn = 500;
+      ledTimeOff = 1000;
+    } else if (!successful_setup) { // error 
+      ledTimeOn = 100;
+      ledTimeOff = 100;
+    } else { // normal operation
+      ledTimeOn = 1000;
+      ledTimeOff = 0;
+    }
   }
 
-  receiver->Update();
-  receiver->GetMode(mode);
-  receiver->GetCommands(commands);
+  if (i%10 == 0) {
+    receiver->Update();
+    receiver->GetMode(mode);
+    radio_controller->Update();
+  }
 
-  imu->UpdateAll();
+  imu->UpdateOrientation(i%10 == 0);
 
 /*
   Serial.print(mode);
@@ -72,21 +75,22 @@ void loop() {
   Serial.print(F("\t"));
 */
 
-  radio_controller->Update();
   controller->Update();
   //Serial.println();
   //Serial.print("Voltage:  ");
   //Serial.println(voltage);
-  int new_time = millis();
-  total_time += new_time - current_time;
-  current_time = new_time;
-  if (i == 1000) {
-    Serial.print("dt:  ");
-    Serial.println(total_time);
-    total_time = 0;
-    i = 0;
+  //int new_time = millis();
+  //int dt = new_time - current_time;
+  //current_time = new_time;
+  //Serial.print("dt:  ");
+  //Serial.println(dt);
+  if (i%100 == 0) {
+    int new_time = millis();
+    int dt = new_time - current_time;
+    current_time = new_time;
+    Serial.println(dt);
   }
-  i = i + 1;
+  i++;
 }
 
 void updateLed() {
