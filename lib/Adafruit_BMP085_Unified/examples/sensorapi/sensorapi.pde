@@ -1,4 +1,4 @@
-#include <Wire.h>
+#include <CustomWire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP085_U.h>
 

@@ -12,7 +12,7 @@ mdps/LSB (least significant bit) at this FS setting, so the raw
 reading of 345 corresponds to 345 * 8.75 = 3020 mdps = 3.02 dps.
 */
 
-#include <Wire.h>
+#include <CustomWire.h>
 #include <L3G.h>
 
 L3G gyro;

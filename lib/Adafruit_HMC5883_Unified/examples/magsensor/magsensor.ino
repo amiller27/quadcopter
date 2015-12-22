@@ -29,7 +29,7 @@
 
  ***************************************************************************/
 
-#include <Wire.h>
+#include <CustomWire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_HMC5883_U.h>
 

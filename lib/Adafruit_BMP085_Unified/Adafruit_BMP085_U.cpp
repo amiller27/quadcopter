@@ -24,7 +24,7 @@
  #include "TinyWireM.h"
  #define Wire TinyWireM
 #else
- #include <Wire.h>
+ #include <CustomWire.h>
 #endif
 
 #include <math.h>
