@@ -58,7 +58,7 @@ void loop() {
     radio_controller->Update();
   }
 
-  imu->UpdateOrientation(i%10 == 0);
+  imu->UpdateAll(i%10 == 0);
 
 /*
   Serial.print(mode);
@@ -88,7 +88,7 @@ void loop() {
     int new_time = millis();
     int dt = new_time - current_time;
     current_time = new_time;
-    Serial.println(dt);
+    //Serial.println(dt);
   }
   i++;
 }

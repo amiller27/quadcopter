@@ -104,6 +104,7 @@ class Adafruit_BMP085_Unified : public Adafruit_Sensor
     bool  begin(bmp085_mode_t mode = BMP085_MODE_ULTRAHIGHRES);
     void  getTemperature(float *temp);
     void  getPressure(float *pressure);
+    void  pollPressure(float *pressure);
     float pressureToAltitude(float seaLvel, float atmospheric);
     float seaLevelForAltitude(float altitude, float atmospheric);
     // Note that the next two functions are just for compatibility with old
@@ -117,6 +118,9 @@ class Adafruit_BMP085_Unified : public Adafruit_Sensor
   private:
     int32_t computeB5(int32_t ut);
     int32_t _sensorID;
+    
+    uint32_t _last_temp_time = 0;
+    int32_t _last_temp = 0;
 };
 
 #endif

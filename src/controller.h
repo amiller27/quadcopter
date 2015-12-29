@@ -13,6 +13,7 @@ struct ControllerCommands {
   float attitude = 0;  //in degrees
   float bank = 0;      //in degrees
   float throttle = 0;  //in % of full throttle
+  bool hold_altitude = false;
 };
 
 class Controller {
@@ -36,6 +37,8 @@ class Controller {
   const static float kI_bank = 0;
   const static float kD_bank = 0;
 
+  const static float kP_altitude = 0;
+
   const static float kMaxYawITerm = 360;
   const static float kMaxAttitudeITerm = 180;
   const static float kMaxBankITerm = 180;
@@ -46,6 +49,8 @@ class Controller {
   const static float kThrottleScaling = 0.8;
 
   float last_heading_;
+  float last_throttle_ = 0;
+  float altitude_setpoint_ = NAN;
 
   float yaw_error_sum_ = 0;
   float attitude_error_sum_ = 0;

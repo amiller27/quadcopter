@@ -212,6 +212,32 @@ static void readRawPressure(int32_t *pressure)
   #endif
 }
 
+static void sendRawPressureCommand()
+{
+  #if !BMP085_USE_DATASHEET_VALS
+    writeCommand(BMP085_REGISTER_CONTROL, BMP085_REGISTER_READPRESSURECMD + (_bmp085Mode << 6));
+  #endif
+}
+
+static void getRawPressureValue(int32_t *pressure)
+{
+  #if BMP085_USE_DATASHEET_VALS
+    *pressure = 23843;
+  #else
+    uint8_t  p8;
+    uint16_t p16;
+    int32_t  p32;
+    read16(BMP085_REGISTER_PRESSUREDATA, &p16);
+    p32 = (uint32_t)p16 << 8;
+    read8(BMP085_REGISTER_PRESSUREDATA+2, &p8);
+    p32 += p8;
+    p32 >>= (8 - _bmp085Mode);
+    
+    *pressure = p32;
+  #endif
+}
+    
+  
 /**************************************************************************/
 /*!
     @brief  Compute B5 coefficient used in temperature & pressure calcs.
@@ -270,6 +296,8 @@ bool Adafruit_BMP085_Unified::begin(bmp085_mode_t mode)
 
   /* Coefficients need to be read once */
   readCoefficients();
+  
+  
     
   return true;
 }
@@ -291,6 +319,56 @@ void Adafruit_BMP085_Unified::getPressure(float *pressure)
 
   /* Temperature compensation */
   b5 = computeB5(ut);
+
+  /* Pressure compensation */
+  b6 = b5 - 4000;
+  x1 = (_bmp085_coeffs.b2 * ((b6 * b6) >> 12)) >> 11;
+  x2 = (_bmp085_coeffs.ac2 * b6) >> 11;
+  x3 = x1 + x2;
+  b3 = (((((int32_t) _bmp085_coeffs.ac1) * 4 + x3) << _bmp085Mode) + 2) >> 2;
+  x1 = (_bmp085_coeffs.ac3 * b6) >> 13;
+  x2 = (_bmp085_coeffs.b1 * ((b6 * b6) >> 12)) >> 16;
+  x3 = ((x1 + x2) + 2) >> 2;
+  b4 = (_bmp085_coeffs.ac4 * (uint32_t) (x3 + 32768)) >> 15;
+  b7 = ((uint32_t) (up - b3) * (50000 >> _bmp085Mode));
+
+  if (b7 < 0x80000000)
+  {
+    p = (b7 << 1) / b4;
+  }
+  else
+  {
+    p = (b7 / b4) << 1;
+  }
+
+  x1 = (p >> 8) * (p >> 8);
+  x1 = (x1 * 3038) >> 16;
+  x2 = (-7357 * p) >> 16;
+  compp = p + ((x1 + x2 + 3791) >> 4);
+
+  /* Assign compensated pressure value */
+  *pressure = compp;
+}
+
+void Adafruit_BMP085_Unified::pollPressure(float *pressure)
+{
+  int32_t  up = 0, compp = 0;
+  int32_t  x1, x2, b5, b6, x3, b3, p;
+  uint32_t b4, b7;
+  
+  /* Get the raw pressure and temperature values */
+  getRawPressureValue(&up);
+  
+  if (millis() - _last_temp_time > 1000 || _last_temp_time == 0)
+  {
+    _last_temp_time = millis();
+    readRawTemperature(&_last_temp);
+  }
+  
+  sendRawPressureCommand();
+
+  /* Temperature compensation */
+  b5 = computeB5(_last_temp);
 
   /* Pressure compensation */
   b6 = b5 - 4000;

@@ -4,12 +4,12 @@
 
 Controller::Controller(Imu* imu) : imu_(imu) {
   imu->GetHeading(last_heading_);
-  /*
+  
   escFR.attach(escFRPin);
   escFL.attach(escFLPin);
   escBR.attach(escBRPin);
   escBL.attach(escBLPin);
-  */
+  
 
   this_frame_ = 0;
   last_frame_ = 0;
@@ -23,16 +23,13 @@ void Controller::SetCommands(ControllerCommands& commands) {
 }
 
 void Controller::Update() {
-
   //full throttle cut
   if (commands_.throttle <= 0.02 || commands_.throttle > 1.25) {
     //power down all motors
-    /*
     escFR.write(kMinPulseWidth);
     escFL.write(kMinPulseWidth);
     escBR.write(kMinPulseWidth);
     escBL.write(kMinPulseWidth);
-    */
     last_frame_ = micros();
     return;
   }
@@ -72,8 +69,23 @@ void Controller::Update() {
   attitude_error_last_ = current_error.attitude;
   bank_error_last_ = current_error.bank;
 
+  float thr;
+  if (commands_.hold_altitude) {
+    if (altitude_setpoint_ == NAN) {
+      imu_->GetAltitude(altitude_setpoint_);
+      thr = last_throttle_;
+    } else {
+      float curr_altitude;
+      imu_->GetAltitude(curr_altitude);
+      thr = last_throttle_ + kP_altitude * (altitude_setpoint_ - curr_altitude);
+    }
+  } else {
+    altitude_setpoint_ = NAN;
+    thr = commands_.throttle * kThrottleScaling;
+  }
+  last_throttle_ = thr;
+
   //determind quad adjustments (in % throttle)
-  float thr = commands_.throttle * kThrottleScaling;
   float y_adj = kP_yaw * current_yaw_error
               + kI_yaw * yaw_error_sum_;
   float a_adj = kP_attitude * current_error.attitude
@@ -117,10 +129,8 @@ void Controller::Update() {
   Serial.println();
   */
 
-  /*
   escFR.writeMicroseconds(escFRVal);
   escFL.writeMicroseconds(escFLVal);
   escBR.writeMicroseconds(escBRVal);
   escBL.writeMicroseconds(escBLVal);
-  */
 }
