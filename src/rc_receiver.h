@@ -50,7 +50,7 @@ class RcReceiver {
   const uint8_t kPins[8] {2, 3, 4, 5, 6, 7, 0, 0};
   
   uint8_t update_flags_ = 0;
-  uint16_t inputs_[8];
+  uint16_t inputs_[8] = {};
   
   // shared variables
   volatile uint8_t update_flags_shared_ = 0;

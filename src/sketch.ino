@@ -27,7 +27,7 @@ int current_time;
 uint16_t i = 0;
 
 void setup() {
-  Serial.begin(9600);
+  // Serial.begin(9600);
   receiver = RcReceiver::Create();
   imu = new Imu(successful_setup);
   controller = new Controller(imu);
@@ -58,7 +58,7 @@ void loop() {
     radio_controller->Update();
   }
 
-  imu->UpdateAll(i%10 == 0);
+  imu->UpdateOrientation(i%10 == 0);
 
 /*
   Serial.print(mode);
@@ -88,7 +88,7 @@ void loop() {
     int new_time = millis();
     int dt = new_time - current_time;
     current_time = new_time;
-    //Serial.println(dt);
+    Serial.println(dt);
   }
   i++;
 }

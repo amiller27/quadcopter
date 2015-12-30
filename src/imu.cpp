@@ -98,20 +98,17 @@ void Imu::UpdateOrientation(bool update_heading) {
   sensor_event_.acceleration.x = sensor_event_.acceleration.y + kAccelXOffset;
   sensor_event_.acceleration.y = -1 * temp + kAccelYOffset;
   sensor_event_.acceleration.z += kAccelZOffset;
-  Serial.print(sensor_event_.acceleration.x);
-  Serial.print("\t");
-  Serial.print(sensor_event_.acceleration.y);
-  Serial.print("\t");
-  Serial.print(sensor_event_.acceleration.z);
-  Serial.println();
+  // Serial.print(sensor_event_.acceleration.x);
+  // Serial.print("\t");
+  // Serial.print(sensor_event_.acceleration.y);
+  // Serial.print("\t");
+  // Serial.print(sensor_event_.acceleration.z);
+  // Serial.println();
 
   float g = sqrt(sq(sensor_event_.acceleration.x) +
                  sq(sensor_event_.acceleration.y) +
                  sq(sensor_event_.acceleration.z));
-  if (g==0) {
-    g = FLT_MIN;
-  }
-  
+
   float accel_bank = fast_acos(hypot(sensor_event_.acceleration.x,
                                      sensor_event_.acceleration.z) / g) *
                      RAD_TO_DEG;
@@ -156,13 +153,6 @@ void Imu::UpdateOrientation(bool update_heading) {
   last_sensor_time_ = current;
 
   dt /= 1000000; //convert dt to seconds for sensor compatibility
-
-  if (dt == 0) {
-    dt = 0.005;
-  }
-  //Serial.print(F("dt: "));
-  //Serial.println(dt, 5);
-
 
   /////////////////////////////// BANK ///////////////////////////////////////
   all_data_.orientation.bank = (1 - kAccelerometerWeight) * (p.bank + kGyroscopeConversionFactor *

@@ -18,6 +18,8 @@ class RadioController {
   RcCommands commands_;
 
   unsigned long last_time_ = 0;
+  bool throttle_hit_zero_ = false;
+  static const float kMinThrottleCutoff = 0.02;
 
   // Extreme Pitch and Roll angles at 100% aggressiveness
   const int kMaxPitchRollAngle = 45;  //in deg

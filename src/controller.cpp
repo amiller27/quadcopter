@@ -5,11 +5,10 @@
 Controller::Controller(Imu* imu) : imu_(imu) {
   imu->GetHeading(last_heading_);
   
-  escFR.attach(escFRPin);
-  escFL.attach(escFLPin);
-  escBR.attach(escBRPin);
-  escBL.attach(escBLPin);
-  
+  escFR.attach(escFRPin, kMinPulseWidth, kMaxPulseWidth);
+  escFL.attach(escFLPin, kMinPulseWidth, kMaxPulseWidth);
+  escBR.attach(escBRPin, kMinPulseWidth, kMaxPulseWidth);
+  escBL.attach(escBLPin, kMinPulseWidth, kMaxPulseWidth);
 
   this_frame_ = 0;
   last_frame_ = 0;
@@ -26,10 +25,10 @@ void Controller::Update() {
   //full throttle cut
   if (commands_.throttle <= 0.02 || commands_.throttle > 1.25) {
     //power down all motors
-    escFR.write(kMinPulseWidth);
-    escFL.write(kMinPulseWidth);
-    escBR.write(kMinPulseWidth);
-    escBL.write(kMinPulseWidth);
+    escFR.writeMicroseconds(kMinPulseWidth);
+    escFL.writeMicroseconds(kMinPulseWidth);
+    escBR.writeMicroseconds(kMinPulseWidth);
+    escBL.writeMicroseconds(kMinPulseWidth);
     last_frame_ = micros();
     return;
   }
@@ -38,10 +37,6 @@ void Controller::Update() {
   dt_ = this_frame_ - last_frame_;
   last_frame_ = this_frame_;
   dt_ /= 1000000;
-
-  if (dt_ ==  0) {
-    dt_ = 0.005;
-  }
 
   Orientation current_orientation_;
   imu_->GetOrientation(current_orientation_);
@@ -112,10 +107,10 @@ void Controller::Update() {
 */
 
   //determine ESC pulse widths
-  float escFRVal = constrain(mapf(thr * (1 - y_adj - a_adj - b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth), kMinPulseWidth, kMaxPulseWidth);
-  float escFLVal = constrain(mapf(thr * (1 + y_adj - a_adj + b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth), kMinPulseWidth, kMaxPulseWidth);
-  float escBRVal = constrain(mapf(thr * (1 + y_adj + a_adj - b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth), kMinPulseWidth, kMaxPulseWidth);
-  float escBLVal = constrain(mapf(thr * (1 - y_adj + a_adj + b_adj), 0, 1, kMinPulseWidth, kMaxPulseWidth), kMinPulseWidth, kMaxPulseWidth);
+  float escFRVal = mapf(thr - y_adj - a_adj - b_adj, 0, 1, kMinPulseWidth, kMaxPulseWidth);
+  float escFLVal = mapf(thr + y_adj - a_adj + b_adj, 0, 1, kMinPulseWidth, kMaxPulseWidth);
+  float escBRVal = mapf(thr + y_adj + a_adj - b_adj, 0, 1, kMinPulseWidth, kMaxPulseWidth);
+  float escBLVal = mapf(thr - y_adj + a_adj + b_adj, 0, 1, kMinPulseWidth, kMaxPulseWidth);
 
   /*
   Serial.print(F("FR:  "));

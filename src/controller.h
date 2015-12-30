@@ -29,12 +29,12 @@ class Controller {
   const static float kP_yaw = 0;
   const static float kI_yaw = 0;
 
-  const static float kP_attitude = 0.004;
-  const static float kI_attitude = 0;
+  const static float kP_attitude = 0.0025;
+  const static float kI_attitude = 0.0025;
   const static float kD_attitude = 0;
 
-  const static float kP_bank = 0.002;
-  const static float kI_bank = 0;
+  const static float kP_bank = 0.0010;
+  const static float kI_bank = 0.0010;
   const static float kD_bank = 0;
 
   const static float kP_altitude = 0;
