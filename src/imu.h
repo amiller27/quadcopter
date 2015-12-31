@@ -45,22 +45,24 @@ class Imu {
 
   //magnetometer 
   Adafruit_HMC5883_Unified mag_ = Adafruit_HMC5883_Unified(12345);
-  static const float kMagnetometerXOffset = 25; // in uT
-  static const float kMagnetometerYOffset = 10; // in uT
-  static const float kMagnetometerZOffset = -5; // in uT
+  static const float kMagXOffset = 25; // in uT
+  static const float kMagYOffset = 10; // in uT
+  static const float kMagZOffset = -5; // in uT
   static const float kMagFilterConst = 0.2;
   sensors_vec_t last_mag_;
 
   float heading_offset;
 
   //gyroscope
-  static const float kGyroscopeConversionFactor = 0.07; // in (deg/s)/LSB
-  static const float kGyroscopeXOffset = 85;
-  static const float kGyroscopeYOffset = 15;
-  static const float kGyroscopeZOffset = 127;
-  static const float kGyroscopeFilterConst = 0.2;
+  static const float kGyroConversionFactor = 0.07; // in (deg/s)/LSB
+  static const int16_t kGyroXOffset = 85;
+  static const int16_t kGyroYOffset = 15;
+  static const int16_t kGyroZOffset = 127;
+  static const float kGyroFilterSize = 3;
   L3G gyro_ = L3G();
-  L3G::vector<int16_t> last_gyro_;
+  L3G::vector<int16_t> old_gyro_data_[kGyroFilterSize];
+  L3G::vector<int16_t> last_gyro_average_;
+  uint8_t last_data_index_ = 0;
 
   //accelerometer
   Adafruit_ADXL345_Unified accel_ = Adafruit_ADXL345_Unified(12345);

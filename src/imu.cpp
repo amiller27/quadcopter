@@ -131,15 +131,18 @@ void Imu::UpdateOrientation(bool update_heading) {
   // has gyro_.g.(x|y|z), which all need to be converted
   gyro_.read();
   temp = gyro_.g.x;
-  gyro_.g.x = gyro_.g.y + kGyroscopeXOffset;
-  gyro_.g.y = -1 * temp + kGyroscopeYOffset;
-  gyro_.g.z = gyro_.g.z + kGyroscopeZOffset;
-  gyro_.g.x = kGyroscopeFilterConst * gyro_.g.x + (1 - kGyroscopeFilterConst) * last_gyro_.x;
-  gyro_.g.y = kGyroscopeFilterConst * gyro_.g.y + (1 - kGyroscopeFilterConst) * last_gyro_.y;
-  gyro_.g.z = kGyroscopeFilterConst * gyro_.g.z + (1 - kGyroscopeFilterConst) * last_gyro_.z;
-  last_gyro_.x = gyro_.g.x;
-  last_gyro_.y = gyro_.g.y;
-  last_gyro_.z = gyro_.g.z;
+  gyro_.g.x = gyro_.g.y + kGyroXOffset;
+  gyro_.g.y = -1 * temp + kGyroYOffset;
+  gyro_.g.z = gyro_.g.z + kGyroZOffset;
+  last_gyro_average_.x -= old_gyro_data_[last_data_index_].x;
+  last_gyro_average_.y -= old_gyro_data_[last_data_index_].y;
+  last_gyro_average_.z -= old_gyro_data_[last_data_index_].z;
+  memcpy(&old_gyro_data_[last_data_index_], &gyro_.g, sizeof(L3G::vector<int16_t>));
+  last_gyro_average_.x += old_gyro_data_[last_data_index_].x;
+  last_gyro_average_.y += old_gyro_data_[last_data_index_].y;
+  last_gyro_average_.z += old_gyro_data_[last_data_index_].z;
+  last_data_index_ = (last_data_index + 1) % kGyroFilterSize;
+  memcpy(&gyro_.g, &last_gyro_average_, sizeof(last_gyro_average_));
   //Serial.print(gyro_.g.x);
   //Serial.print("\t");
   //Serial.print(gyro_.g.y);
@@ -157,7 +160,7 @@ void Imu::UpdateOrientation(bool update_heading) {
   dt /= 1000000; //convert dt to seconds for sensor compatibility
 
   /////////////////////////////// BANK ///////////////////////////////////////
-  all_data_.orientation.bank = (1 - kAccelerometerWeight) * (p.bank + kGyroscopeConversionFactor *
+  all_data_.orientation.bank = (1 - kAccelerometerWeight) * (p.bank + kGyroConversionFactor *
                       gyro_.g.x * dt) + kAccelerometerWeight * accel_bank;
   ////////////////////////////////////////////////////////////////////////////
   
@@ -167,7 +170,7 @@ void Imu::UpdateOrientation(bool update_heading) {
   
   /////////////////////////////// ATTITUDE ///////////////////////////////////
   all_data_.orientation.attitude = (1-kAccelerometerWeight) *
-  (p.attitude + kGyroscopeConversionFactor * dt * 
+  (p.attitude + kGyroConversionFactor * dt *
   (gyro_.g.y * cBank + gyro_.g.z * sBank)) + kAccelerometerWeight * accel_attitude;
   ////////////////////////////////////////////////////////////////////////////
  
@@ -178,9 +181,9 @@ void Imu::UpdateOrientation(bool update_heading) {
   if (update_heading) {
     // has event.magnetic.(x|y|z) in uT
     mag_.getEvent(&sensor_event_);
-    sensor_event_.magnetic.x += kMagnetometerXOffset;
-    sensor_event_.magnetic.y += kMagnetometerYOffset;
-    sensor_event_.magnetic.z += kMagnetometerZOffset;
+    sensor_event_.magnetic.x += kMagXOffset;
+    sensor_event_.magnetic.y += kMagYOffset;
+    sensor_event_.magnetic.z += kMagZOffset;
     temp = sensor_event_.magnetic.x;
     sensor_event_.magnetic.x = sensor_event_.magnetic.y;
     sensor_event_.magnetic.y = -1 * temp;
