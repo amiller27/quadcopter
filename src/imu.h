@@ -54,7 +54,7 @@ class Imu {
   float heading_offset;
 
   //gyroscope
-  static const float kGyroscopeConversionFactor = 0.0087491; // in (deg/s)/LSB
+  static const float kGyroscopeConversionFactor = 0.07; // in (deg/s)/LSB
   static const float kGyroscopeXOffset = 85;
   static const float kGyroscopeYOffset = 15;
   static const float kGyroscopeZOffset = 127;

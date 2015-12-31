@@ -23,7 +23,9 @@ Imu::Imu(bool &successful) {
     error = 2;
   }
 
-  gyro_.enableDefault();
+  gyro_.writeReg(CTRL_REG1, 0x8f); // set 400Hz ODR, power on
+  gyro_.writeReg(CTRL_REG5, 0x02); // enable second built-in LPF
+  gyro_.writeReg(CTRL_REG4, 0x30); // set 2000 deg/s range
 
   if (!mag_.begin()) {
     // problem with magnetometer connection
