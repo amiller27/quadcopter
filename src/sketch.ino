@@ -1,4 +1,5 @@
 #include "rc_receiver.h"
+#include "conf.h"
 #include "controller.h"
 #include "imu.h"
 #include "radio_controller.h"
@@ -23,11 +24,18 @@ int ledTimeOff; //in us
 
 bool successful_setup;
 
+#ifdef DEBUG_DT
 int current_time;
+#endif
+
 uint16_t i = 0;
 
 void setup() {
-  //Serial.begin(9600);
+
+#ifdef DEBUG
+  Serial.begin(9600);
+#endif
+
   receiver = RcReceiver::Create();
   imu = new Imu(successful_setup);
   controller = new Controller(imu);
@@ -60,37 +68,28 @@ void loop() {
 
   imu->UpdateOrientation(i%10 == 0);
 
-/*
-  Serial.print(mode);
-  Serial.print(F("\t"));
-  Serial.print(commands.aggressiveness, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.throttle, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.yaw, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.attitude, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.bank, 10);
-  Serial.print(F("\t"));
-*/
-
   controller->Update();
-  //Serial.println();
-  //Serial.print("Voltage:  ");
-  //Serial.println(voltage);
-  //int new_time = millis();
-  //int dt = new_time - current_time;
-  //current_time = new_time;
-  //Serial.print("dt:  ");
-  //Serial.println(dt);
+
+#ifdef DEBUG_VOLTAGE
+  Serial.print(voltage);
+  Serial.print("\t");
+#endif
+
+#ifdef DEBUG_DT
   if (i%100 == 0) {
     int new_time = millis();
     int dt = new_time - current_time;
     current_time = new_time;
-    Serial.println(dt);
+    Serial.print(dt);
+    Serial.print("\t");
   }
+#endif
+
   i++;
+
+#ifdef DEBUG
+  Serial.println();
+#endif
 }
 
 void updateLed() {

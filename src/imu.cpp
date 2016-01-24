@@ -1,4 +1,6 @@
 #include <Arduino.h>
+
+#include "conf.h"
 #include "imu.h"
 
 #include <math.h>
@@ -123,12 +125,15 @@ void Imu::UpdateOrientation(bool update_heading) {
   sensor_event_.acceleration.x = sensor_event_.acceleration.y + kAccelXOffset;
   sensor_event_.acceleration.y = -1 * temp + kAccelYOffset;
   sensor_event_.acceleration.z += kAccelZOffset;
-  // Serial.print(sensor_event_.acceleration.x);
-  // Serial.print("\t");
-  // Serial.print(sensor_event_.acceleration.y);
-  // Serial.print("\t");
-  // Serial.print(sensor_event_.acceleration.z);
-  // Serial.println();
+
+#ifdef DEBUG_ACCEL_RAW
+  Serial.print(sensor_event_.acceleration.x);
+  Serial.print("\t");
+  Serial.print(sensor_event_.acceleration.y);
+  Serial.print("\t");
+  Serial.print(sensor_event_.acceleration.z);
+  Serial.print("\t");
+#endif
 
   float g = sqrt(sq(sensor_event_.acceleration.x) +
                  sq(sensor_event_.acceleration.y) +
@@ -138,17 +143,19 @@ void Imu::UpdateOrientation(bool update_heading) {
                                      sensor_event_.acceleration.z) / g) *
                      RAD_TO_DEG;
   if (sensor_event_.acceleration.y > 0) {accel_bank *= -1;}
-  //Serial.print("ab: ");
-  //Serial.print(accel_bank);
 
   float accel_attitude = fast_acos(hypot(sensor_event_.acceleration.y,
                                          sensor_event_.acceleration.z) / g) *
                               RAD_TO_DEG;
   if (sensor_event_.acceleration.x < 0) {accel_attitude *= -1;}
-  //Serial.print("\taa: ");
-  //Serial.print(accel_attitude);
 
-
+#ifdef DEBUG_ACCEL_ANGLES
+  Serial.print("ab: ");
+  Serial.print(accel_bank);
+  Serial.print("\taa: ");
+  Serial.print(accel_attitude);
+  Serial.print("\t");
+#endif
 
   //////////////////////////////// GYROSCOPE ////////////////////////////////
   // has gyro_.g.(x|y|z), which all need to be converted
@@ -225,6 +232,15 @@ void Imu::UpdateOrientation(bool update_heading) {
     }
   }
   ////////////////////////////////////////////////////////////////////////////
+
+#ifdef DEBUG_IMU
+  Serial.print(all_data_.orientation.attitude);
+  Serial.print("\t");
+  Serial.print(all_data_.orientation.bank);
+  Serial.print("\t");
+  Serial.print(all_data_.orientation.heading);
+  Serial.print("\t");
+#endif
 }
 
 void Imu::GetAllData(ImuData& out) {

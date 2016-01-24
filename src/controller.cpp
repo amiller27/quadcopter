@@ -1,3 +1,4 @@
+#include "conf.h"
 #include "controller.h"
 
 #include <float.h>
@@ -91,8 +92,7 @@ void Controller::Update() {
               + kI_bank * bank_error_sum_
               - kD_bank * bank_error_diff;
 
-
-/*
+#ifdef DEBUG_PID
   Serial.print(F("thr: "));
   Serial.print(thr);
   Serial.print("\t");
@@ -104,8 +104,8 @@ void Controller::Update() {
   Serial.print("\t");
   Serial.print(F("b_ad: "));
   Serial.print(b_adj);
-  Serial.println();
-*/
+  Serial.print("\t");
+#endif
 
   //determine ESC pulse widths
   float escFRVal = mapf(thr - y_adj - a_adj - b_adj, 0, 1, kMinPulseWidth, kMaxPulseWidth);
@@ -113,7 +113,7 @@ void Controller::Update() {
   float escBRVal = mapf(thr + y_adj + a_adj - b_adj, 0, 1, kMinPulseWidth, kMaxPulseWidth);
   float escBLVal = mapf(thr - y_adj + a_adj + b_adj, 0, 1, kMinPulseWidth, kMaxPulseWidth);
 
-  /*
+#ifdef DEBUG_OUTPUTS
   Serial.print(F("FR:  "));
   Serial.print(escFRVal);
   Serial.print(F("\tFL:  "));
@@ -122,8 +122,8 @@ void Controller::Update() {
   Serial.print(escBRVal);
   Serial.print(F("\tBL:  "));
   Serial.print(escBLVal);
-  Serial.println();
-  */
+  Serial.print("\t");
+#endif
 
   escFR.writeMicroseconds(escFRVal);
   escFL.writeMicroseconds(escFLVal);

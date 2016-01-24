@@ -1,3 +1,4 @@
+#include "conf.h"
 #include "rc_receiver.h"
 
 // tells EnableInterrupt to only register interrupts for pins D0 to D13
@@ -45,6 +46,13 @@ void RcReceiver::Update() {
     
     interrupts();
   }
+
+#ifdef DEBUG_RC_PULSES
+  for (int i = 0; i < 8; i++) {
+    Serial.print(inputs_[i]);
+    Serial.print("\t");
+  }
+#endif
 }
 
 void RcReceiver::GetMode(OperationMode& out) {
