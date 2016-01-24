@@ -18,9 +18,11 @@ void RadioController::Update() {
                            kMaxPitchRollAngle;
   output_commands_.bank = 2*(commands_.bank - 0.5) * commands_.aggressiveness * 
                        kMaxPitchRollAngle;
-  if (commands_.throttle <= kMinThrottleCutoff) {
+  if (commands_.throttle <= Controller::kZeroThrottleThreshold) {
     throttle_hit_zero_ = true;
   }
+
+  output_commands_.aggressiveness = commands_.aggressiveness;
 
   if (throttle_hit_zero_) {
     output_commands_.throttle = commands_.throttle;

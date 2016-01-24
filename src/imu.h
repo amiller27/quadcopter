@@ -23,6 +23,7 @@ class Imu {
   ~Imu();
 
   void CalibrateMagnetometer(int cycles);
+  void CalibrateGyro(int cycles);
 
   void UpdateAll(bool update_heading);
   void UpdateOrientation(bool update_heading);
@@ -37,7 +38,7 @@ class Imu {
   ImuData all_data_;
 
   //complimentary filter constant
-  static const float kAccelerometerWeight = 0.01; //out of 1
+  static const float kAccelerometerWeight = 0.02; //out of 1
 
   // SENSORS
 
@@ -55,10 +56,10 @@ class Imu {
 
   //gyroscope
   static const float kGyroConversionFactor = 0.07; // in (deg/s)/LSB
-  static const int16_t kGyroXOffset = 85;
-  static const int16_t kGyroYOffset = 15;
-  static const int16_t kGyroZOffset = 127;
-  static const float kGyroFilterSize = 3;
+  int16_t gyroXOffset_ = -6;
+  int16_t gyroYOffset_ = 4;
+  int16_t gyroZOffset_ = 15;
+  static const int kGyroFilterSize = 1;
   L3G gyro_ = L3G();
   L3G::vector<int16_t> old_gyro_data_[kGyroFilterSize];
   L3G::vector<int16_t> last_gyro_average_;

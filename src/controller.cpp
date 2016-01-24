@@ -19,11 +19,12 @@ void Controller::SetCommands(ControllerCommands& commands) {
   commands_.attitude = commands.attitude;
   commands_.bank = commands.bank;
   commands_.throttle = commands.throttle;
+  commands_.aggressiveness = commands.aggressiveness;
 }
 
 void Controller::Update() {
   //full throttle cut
-  if (commands_.throttle <= 0.02 || commands_.throttle > 1.25) {
+  if (commands_.throttle <= kZeroThrottleThreshold || commands_.throttle > 1.25) {
     //power down all motors
     escFR.writeMicroseconds(kMinPulseWidth);
     escFL.writeMicroseconds(kMinPulseWidth);
@@ -40,7 +41,7 @@ void Controller::Update() {
 
   Orientation current_orientation_;
   imu_->GetOrientation(current_orientation_);
-  
+
   // update current error
   Orientation current_error;
   float current_yaw_error = commands_.yaw - (current_orientation_.heading - last_heading_) / dt_ * 1000000;
@@ -83,10 +84,10 @@ void Controller::Update() {
   //determind quad adjustments (in % throttle)
   float y_adj = kP_yaw * current_yaw_error
               + kI_yaw * yaw_error_sum_;
-  float a_adj = kP_attitude * current_error.attitude
+  float a_adj = commands_.aggressiveness * kP_attitude * current_error.attitude
               + kI_attitude * attitude_error_sum_
               - kD_attitude * attitude_error_diff;
-  float b_adj = kP_bank * current_error.bank
+  float b_adj = commands_.aggressiveness * kP_bank * current_error.bank
               + kI_bank * bank_error_sum_
               - kD_bank * bank_error_diff;
 

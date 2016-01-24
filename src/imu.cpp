@@ -5,6 +5,8 @@
 #include <float.h>
 
 Imu::Imu(bool &successful) {
+  memset(old_gyro_data_, 0, kGyroFilterSize * sizeof(L3G::vector<int16_t>));
+  memset(&last_gyro_average_, 0, sizeof(L3G::vector<int16_t>));
 
   int error = 0;
 
@@ -23,9 +25,9 @@ Imu::Imu(bool &successful) {
     error = 2;
   }
 
-  gyro_.writeReg(CTRL_REG1, 0x8f); // set 400Hz ODR, power on
-  gyro_.writeReg(CTRL_REG5, 0x02); // enable second built-in LPF
-  gyro_.writeReg(CTRL_REG4, 0x30); // set 2000 deg/s range
+  gyro_.writeReg(L3G::CTRL_REG1, 0x8f); // set 400Hz ODR, power on
+  gyro_.writeReg(L3G::CTRL_REG5, 0x02); // enable second built-in LPF
+  gyro_.writeReg(L3G::CTRL_REG4, 0x30); // set 2000 deg/s range
 
   if (!mag_.begin()) {
     // problem with magnetometer connection
@@ -60,8 +62,8 @@ void Imu::CalibrateMagnetometer(int cycles) {
 
   for (int i = 0; i<cycles; i++) {
     mag_.getEvent(&sensor_event_);
-    magX += sensor_event_.magnetic.x+kMagnetometerXOffset;
-    magY += sensor_event_.magnetic.y+kMagnetometerYOffset;
+    magX += sensor_event_.magnetic.x+kMagXOffset;
+    magY += sensor_event_.magnetic.y+kMagYOffset;
     Serial.print(F("X: "));
     Serial.print(magX);
     Serial.print(F("\tY: "));
@@ -73,6 +75,27 @@ void Imu::CalibrateMagnetometer(int cycles) {
   heading_offset = -atan2(-magX, magY) * RAD_TO_DEG;
   Serial.print(F("Heading Offset: "));
   Serial.println(heading_offset, 3);
+}
+
+void Imu::CalibrateGyro(int cycles) {
+  int32_t new_gyroXOffset = 0;
+  int32_t new_gyroYOffset = 0;
+  int32_t new_gyroZOffset = 0;
+  
+  for (int i = 0; i < cycles; i++) {
+    gyro_.read();
+    new_gyroXOffset -= gyro_.g.x;
+    new_gyroYOffset -= gyro_.g.y;
+    new_gyroZOffset -= gyro_.g.z;
+    delay(100);
+  }
+  new_gyroXOffset /= cycles;
+  new_gyroYOffset /= cycles;
+  new_gyroZOffset /= cycles;
+
+  gyroXOffset_ = new_gyroXOffset;
+  gyroYOffset_ = new_gyroYOffset;
+  gyroZOffset_ = new_gyroZOffset;
 }
 
 void Imu::UpdateAll(bool update_heading) {
@@ -130,10 +153,10 @@ void Imu::UpdateOrientation(bool update_heading) {
   //////////////////////////////// GYROSCOPE ////////////////////////////////
   // has gyro_.g.(x|y|z), which all need to be converted
   gyro_.read();
-  temp = gyro_.g.x;
-  gyro_.g.x = gyro_.g.y + kGyroXOffset;
-  gyro_.g.y = -1 * temp + kGyroYOffset;
-  gyro_.g.z = gyro_.g.z + kGyroZOffset;
+  int16_t gyro_temp = gyro_.g.x;
+  gyro_.g.x = gyro_.g.y + gyroYOffset_;
+  gyro_.g.y = -1 * gyro_temp - gyroXOffset_;
+  gyro_.g.z = gyro_.g.z + gyroZOffset_;
   last_gyro_average_.x -= old_gyro_data_[last_data_index_].x;
   last_gyro_average_.y -= old_gyro_data_[last_data_index_].y;
   last_gyro_average_.z -= old_gyro_data_[last_data_index_].z;
@@ -141,14 +164,8 @@ void Imu::UpdateOrientation(bool update_heading) {
   last_gyro_average_.x += old_gyro_data_[last_data_index_].x;
   last_gyro_average_.y += old_gyro_data_[last_data_index_].y;
   last_gyro_average_.z += old_gyro_data_[last_data_index_].z;
-  last_data_index_ = (last_data_index + 1) % kGyroFilterSize;
+  last_data_index_ = (last_data_index_ + 1) % kGyroFilterSize;
   memcpy(&gyro_.g, &last_gyro_average_, sizeof(last_gyro_average_));
-  //Serial.print(gyro_.g.x);
-  //Serial.print("\t");
-  //Serial.print(gyro_.g.y);
-  //Serial.print("\t");
-  //Serial.print(gyro_.g.z);
-  //Serial.println();
   ///////////////////////////////////////////////////////////////////////////  
 
   Orientation p = all_data_.orientation;
@@ -224,15 +241,19 @@ void Imu::GetHeading(float& out) {
 }
 
 void Imu::GetOrientation(Orientation& out) {
+  static int i = 0;
+  i++;
   out.bank = all_data_.orientation.bank + kAccelBankOffset;
   out.attitude = all_data_.orientation.attitude;
   out.heading = all_data_.orientation.heading;
-  //Serial.print("\tH:  ");
-  //Serial.print(out.heading);
-  //Serial.print("\tA:  ");
-  //Serial.print(out.attitude);
-  //Serial.print("\tB:  ");
-  //Serial.print(out.bank);
-  //Serial.println();
+  if (i == 10) {
+    Serial.print("\tH:  ");
+    Serial.print(out.heading);
+    Serial.print("\tA:  ");
+    Serial.print(out.attitude);
+    Serial.print("\tB:  ");
+    Serial.print(out.bank);
+    Serial.println();
+    i = 0;
+  }
 }
-

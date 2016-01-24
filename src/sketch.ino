@@ -27,7 +27,7 @@ int current_time;
 uint16_t i = 0;
 
 void setup() {
-  // Serial.begin(9600);
+  //Serial.begin(9600);
   receiver = RcReceiver::Create();
   imu = new Imu(successful_setup);
   controller = new Controller(imu);

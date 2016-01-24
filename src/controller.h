@@ -13,6 +13,7 @@ struct ControllerCommands {
   float attitude = 0;  //in degrees
   float bank = 0;      //in degrees
   float throttle = 0;  //in % of full throttle
+  float aggressiveness = 0; // in between 0 and 1
   bool hold_altitude = false;
 };
 
@@ -24,6 +25,8 @@ class Controller {
   void SetCommands(ControllerCommands& commands);
   void Update();
   
+  const static float kZeroThrottleThreshold = 0.05;
+
  private:
   //PID constants
   const static float kP_yaw = 0;
