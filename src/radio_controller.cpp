@@ -32,17 +32,15 @@ void RadioController::Update() {
   controller_->SetCommands(output_commands_);
 
 #ifdef DEBUG_RC_COMMANDS
-  Serial.print(mode);
+  Serial.print(commands_.aggressiveness, 10);
   Serial.print(F("\t"));
-  Serial.print(commands.aggressiveness, 10);
+  Serial.print(commands_.throttle, 10);
   Serial.print(F("\t"));
-  Serial.print(commands.throttle, 10);
+  Serial.print(commands_.yaw, 10);
   Serial.print(F("\t"));
-  Serial.print(commands.yaw, 10);
+  Serial.print(commands_.attitude, 10);
   Serial.print(F("\t"));
-  Serial.print(commands.attitude, 10);
-  Serial.print(F("\t"));
-  Serial.print(commands.bank, 10);
+  Serial.print(commands_.bank, 10);
   Serial.print(F("\t"));
 #endif
 }
