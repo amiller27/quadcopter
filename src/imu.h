@@ -38,7 +38,7 @@ class Imu {
   ImuData all_data_;
 
   //complimentary filter constant
-  static const float kAccelerometerWeight = 0.02; //out of 1
+  static const float kAccelerometerWeight = 0.01; //out of 1
 
   // SENSORS
 
