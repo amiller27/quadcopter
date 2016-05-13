@@ -56,6 +56,7 @@ Imu::Imu(bool &successful) {
   all_data_.orientation.heading=0;
   all_data_.pressure = 0;
   CalibrateMagnetometer(5);
+  CalibrateGyro(100);
 }
 
 void Imu::CalibrateMagnetometer(int cycles) {
@@ -84,16 +85,31 @@ void Imu::CalibrateGyro(int cycles) {
   int32_t new_gyroYOffset = 0;
   int32_t new_gyroZOffset = 0;
   
+  Serial.println(F("Gyro calibration:"));
   for (int i = 0; i < cycles; i++) {
     gyro_.read();
+    Serial.print(F("x: "));
+    Serial.print(gyro_.g.x);
+    Serial.print(F("\ty: "));
+    Serial.print(gyro_.g.y);
+    Serial.print(F("\tz: "));
+    Serial.println(gyro_.g.z);
     new_gyroXOffset -= gyro_.g.x;
     new_gyroYOffset -= gyro_.g.y;
     new_gyroZOffset -= gyro_.g.z;
-    delay(100);
+    delay(10);
   }
   new_gyroXOffset /= cycles;
   new_gyroYOffset /= cycles;
   new_gyroZOffset /= cycles;
+
+  Serial.println(F("Gyro offsets:"));
+  Serial.print(F("x: "));
+  Serial.print(new_gyroXOffset);
+  Serial.print(F("\ty: "));
+  Serial.print(new_gyroYOffset);
+  Serial.print(F("\tz: "));
+  Serial.println(new_gyroZOffset);
 
   gyroXOffset_ = new_gyroXOffset;
   gyroYOffset_ = new_gyroYOffset;
@@ -280,19 +296,7 @@ void Imu::GetHeading(float& out) {
 }
 
 void Imu::GetOrientation(Orientation& out) {
-  static int i = 0;
-  i++;
   out.bank = all_data_.orientation.bank + kAccelBankOffset;
   out.attitude = all_data_.orientation.attitude + kAccelAttitudeOffset;
   out.heading = all_data_.orientation.heading;
-  if (i == 10) {
-    Serial.print("\tH:  ");
-    Serial.print(out.heading);
-    Serial.print("\tA:  ");
-    Serial.print(out.attitude);
-    Serial.print("\tB:  ");
-    Serial.print(out.bank);
-    Serial.println();
-    i = 0;
-  }
 }
