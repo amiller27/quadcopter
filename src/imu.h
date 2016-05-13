@@ -70,7 +70,8 @@ class Imu {
   static const float kAccelXOffset = 0;
   static const float kAccelYOffset = 0;
   static const float kAccelZOffset = 0;
-  static const float kAccelBankOffset = 3.0;
+  static const float kAccelAttitudeOffset = -2.16;
+  static const float kAccelBankOffset = -0.1;
   
   //barometer
   Adafruit_BMP085_Unified baro_ = Adafruit_BMP085_Unified(12345);

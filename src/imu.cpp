@@ -254,9 +254,9 @@ void Imu::UpdateOrientation(bool update_heading) {
     if (i == 50) {
       printed = true;
       Serial.print(F("att: "));
-      Serial.print(all_data_.orientation.attitude);
+      Serial.print(all_data_.orientation.attitude + kAccelBankOffset);
       Serial.print(F("\tbnk: "));
-      Serial.print(all_data_.orientation.bank);
+      Serial.print(all_data_.orientation.bank + kAccelAttitudeOffset);
       Serial.print(F("\thdg: "));
       Serial.print(all_data_.orientation.heading);
       Serial.print(F("\t"));
@@ -283,7 +283,7 @@ void Imu::GetOrientation(Orientation& out) {
   static int i = 0;
   i++;
   out.bank = all_data_.orientation.bank + kAccelBankOffset;
-  out.attitude = all_data_.orientation.attitude;
+  out.attitude = all_data_.orientation.attitude + kAccelAttitudeOffset;
   out.heading = all_data_.orientation.heading;
   if (i == 10) {
     Serial.print("\tH:  ");
