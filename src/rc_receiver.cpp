@@ -48,9 +48,20 @@ void RcReceiver::Update() {
   }
 
 #ifdef DEBUG_RC_PULSES
-  for (int i = 0; i < 8; i++) {
-    Serial.print(inputs_[i]);
-    Serial.print("\t");
+  {
+    static int i = 0;
+    i++;
+    if (i == 50) {
+      printed = true;
+      for (int j = 0; j < 8; j++) {
+        Serial.print(F("ch"));
+        Serial.print(j);
+        Serial.print(F(": "));
+        Serial.print(inputs_[j]);
+        Serial.print(F("\t"));
+      }
+      i = 0;
+    }
   }
 #endif
 }

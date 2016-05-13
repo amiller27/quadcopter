@@ -127,12 +127,19 @@ void Imu::UpdateOrientation(bool update_heading) {
   sensor_event_.acceleration.z += kAccelZOffset;
 
 #ifdef DEBUG_ACCEL_RAW
-  Serial.print(sensor_event_.acceleration.x);
-  Serial.print("\t");
-  Serial.print(sensor_event_.acceleration.y);
-  Serial.print("\t");
-  Serial.print(sensor_event_.acceleration.z);
-  Serial.print("\t");
+  {
+    static int i = 0;
+    i++;
+    if (i == 50) {
+      Serial.print(sensor_event_.acceleration.x);
+      Serial.print("\t");
+      Serial.print(sensor_event_.acceleration.y);
+      Serial.print("\t");
+      Serial.print(sensor_event_.acceleration.z);
+      Serial.print("\t");
+      i = 0;
+    }
+  }
 #endif
 
   float g = sqrt(sq(sensor_event_.acceleration.x) +
@@ -150,11 +157,18 @@ void Imu::UpdateOrientation(bool update_heading) {
   if (sensor_event_.acceleration.x < 0) {accel_attitude *= -1;}
 
 #ifdef DEBUG_ACCEL_ANGLES
-  Serial.print("ab: ");
-  Serial.print(accel_bank);
-  Serial.print("\taa: ");
-  Serial.print(accel_attitude);
-  Serial.print("\t");
+  {
+    static int i = 0;
+    i++;
+    if (i == 50) {
+      Serial.print("ab: ");
+      Serial.print(accel_bank);
+      Serial.print("\taa: ");
+      Serial.print(accel_attitude);
+      Serial.print("\t");
+      i = 0;
+    }
+  }
 #endif
 
   //////////////////////////////// GYROSCOPE ////////////////////////////////
@@ -234,12 +248,21 @@ void Imu::UpdateOrientation(bool update_heading) {
   ////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG_IMU
-  Serial.print(all_data_.orientation.attitude);
-  Serial.print("\t");
-  Serial.print(all_data_.orientation.bank);
-  Serial.print("\t");
-  Serial.print(all_data_.orientation.heading);
-  Serial.print("\t");
+  {
+    static int i = 0;
+    i++;
+    if (i == 50) {
+      printed = true;
+      Serial.print(F("att: "));
+      Serial.print(all_data_.orientation.attitude);
+      Serial.print(F("\tbnk: "));
+      Serial.print(all_data_.orientation.bank);
+      Serial.print(F("\thdg: "));
+      Serial.print(all_data_.orientation.heading);
+      Serial.print(F("\t"));
+      i = 0;
+    }
+  }
 #endif
 }
 

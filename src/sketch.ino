@@ -23,12 +23,11 @@ int ledTimeOn;  //in us
 int ledTimeOff; //in us
 
 bool successful_setup;
-
-#ifdef DEBUG_DT
-int current_time;
-#endif
-
 uint16_t i = 0;
+
+#ifdef DEBUG
+bool printed = false;
+#endif
 
 void setup() {
 
@@ -42,7 +41,6 @@ void setup() {
   radio_controller = new RadioController(controller, receiver);
   //gps_controller = GpsController::Create(controller, imu);
   pinMode(13, OUTPUT);
-  current_time = millis();
 }
 
 void loop() {
@@ -71,24 +69,43 @@ void loop() {
   controller->Update();
 
 #ifdef DEBUG_VOLTAGE
-  Serial.print(voltage);
-  Serial.print("\t");
+  {
+    static int i = 0;
+    i++;
+    if (i == 50) {
+      printed = true;
+      Serial.print(voltage);
+      Serial.print("\t");
+      i = 0;
+    }
+  }
 #endif
 
 #ifdef DEBUG_DT
-  if (i%100 == 0) {
-    int new_time = millis();
-    int dt = new_time - current_time;
-    current_time = new_time;
-    Serial.print(dt);
-    Serial.print("\t");
+  {
+    static int i = 0;
+    static uint32_t current_time = 0;
+    i++;
+    if (i == 50) {
+      printed = true;
+      int new_time = millis();
+      int dt = new_time - current_time;
+      current_time = new_time;
+      Serial.print(dt);
+      Serial.print(" (ms/100 loops)");
+      Serial.print("\t");
+      i = 0;
+    }
   }
 #endif
 
   i++;
 
 #ifdef DEBUG
-  Serial.println();
+  if (printed) {
+    Serial.println();
+    printed = false;
+  }
 #endif
 }
 

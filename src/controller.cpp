@@ -93,18 +93,26 @@ void Controller::Update() {
               - kD_bank * bank_error_diff;
 
 #ifdef DEBUG_PID
-  Serial.print(F("thr: "));
-  Serial.print(thr);
-  Serial.print("\t");
-  Serial.print(F("y_ad: "));
-  Serial.print(y_adj);
-  Serial.print("\t");
-  Serial.print(F("a_ad: "));
-  Serial.print(a_adj);
-  Serial.print("\t");
-  Serial.print(F("b_ad: "));
-  Serial.print(b_adj);
-  Serial.print("\t");
+  {
+    static int i = 0;
+    i++;
+    if (i == 50) {
+      printed = true;
+      Serial.print(F("thr: "));
+      Serial.print(thr);
+      Serial.print("\t");
+      Serial.print(F("y_ad: "));
+      Serial.print(y_adj);
+      Serial.print("\t");
+      Serial.print(F("a_ad: "));
+      Serial.print(a_adj);
+      Serial.print("\t");
+      Serial.print(F("b_ad: "));
+      Serial.print(b_adj);
+      Serial.print("\t");
+      i = 0;
+    }
+  }
 #endif
 
   //determine ESC pulse widths
@@ -114,15 +122,23 @@ void Controller::Update() {
   float escBLVal = mapf(thr - y_adj + a_adj + b_adj, 0, 1, kMinPulseWidth, kMaxPulseWidth);
 
 #ifdef DEBUG_OUTPUTS
-  Serial.print(F("FR:  "));
-  Serial.print(escFRVal);
-  Serial.print(F("\tFL:  "));
-  Serial.print(escFLVal);
-  Serial.print(F("\tBR:  "));
-  Serial.print(escBRVal);
-  Serial.print(F("\tBL:  "));
-  Serial.print(escBLVal);
-  Serial.print("\t");
+  {
+    static int i = 0;
+    i++;
+    if (i == 50) {
+      printed = true;
+      Serial.print(F("FR:  "));
+      Serial.print(escFRVal);
+      Serial.print(F("\tFL:  "));
+      Serial.print(escFLVal);
+      Serial.print(F("\tBR:  "));
+      Serial.print(escBRVal);
+      Serial.print(F("\tBL:  "));
+      Serial.print(escBLVal);
+      Serial.print("\t");
+      i = 0;
+    }
+  }
 #endif
 
   escFR.writeMicroseconds(escFRVal);
