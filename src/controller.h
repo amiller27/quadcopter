@@ -32,13 +32,13 @@ class Controller {
   const static float kP_yaw = 0;
   const static float kI_yaw = 0;
 
-  const static float kP_attitude = 0.0025;
-  const static float kI_attitude = 0.0025;
-  const static float kD_attitude = 0;
+  const static float kP_attitude = 0.055;
+  const static float kI_attitude = 0.000;
+  const static float kD_attitude = 0.000;
 
-  const static float kP_bank = 0.0010;
-  const static float kI_bank = 0.0010;
-  const static float kD_bank = 0;
+  const static float kP_bank = 0.055;
+  const static float kI_bank = 0.000;
+  const static float kD_bank = 0.000;
 
   const static float kP_altitude = 0;
 
@@ -73,16 +73,16 @@ class Controller {
   Imu* imu_;
 
   // ESC connection constants
-  int escFRPin = 8;
-  int escFLPin = 9;
-  int escBRPin = 10;
-  int escBLPin = 11;
+  const int escFRPin = 10;
+  const int escFLPin = 8;
+  const int escBRPin = 11;
+  const int escBLPin = 9;
   Servo escFR;
   Servo escFL;
   Servo escBR;
   Servo escBL;
-  const static int kMinPulseWidth = 1000; //in microseconds
-  const static int kMaxPulseWidth = 2000; //in microseconds
+  const static int kMinPulseWidth = 1050; //in microseconds
+  const static int kMaxPulseWidth = 1850; //in microseconds
 };
 
 #endif

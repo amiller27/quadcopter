@@ -32,9 +32,9 @@ class RcReceiver {
  private:
   RcReceiver() {};
   enum {
-    bank = 0,
-    attitude = 1,
-    throttle = 2,
+    bank = 1,
+    attitude = 2,
+    throttle = 0,
     yaw = 3,
     mode = 4,
     aggressiveness = 5,
@@ -42,9 +42,9 @@ class RcReceiver {
     unmapped3 = 7
   };
 
-  static const uint16_t kModeCutoff = 2952;
-  static const uint16_t kMinPulseLength = 2112;
-  static const uint16_t kMaxPulseLength = 3792;
+  static const uint16_t kModeCutoff = 2500;
+  static const uint16_t kMinPulseLength = 1980;
+  static const uint16_t kMaxPulseLength = 4010;
 
   // indexed by channel, 0-7
   const uint8_t kPins[8] {2, 3, 4, 5, 6, 7, 0, 0};
