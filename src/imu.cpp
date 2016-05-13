@@ -12,6 +12,9 @@ Imu::Imu(bool &successful) {
 
   int error = 0;
 
+  Wire.begin();
+  TWBR = 24;
+
   // set up accelerometer
   if (!accel_.begin()) {
     error = 1;
@@ -20,8 +23,6 @@ Imu::Imu(bool &successful) {
   accel_.setRange(ADXL345_RANGE_16_G);
 
   // set up gyroscope
-  Wire.begin();
-
   if (!gyro_.init()) {
     // problem with gyro connection
     error = 2;
@@ -41,7 +42,6 @@ Imu::Imu(bool &successful) {
     error = 4;
   }
 
-  TWBR = 24;
 
   successful = true;
   if (error) {
