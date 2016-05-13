@@ -31,6 +31,9 @@ void Controller::Update() {
     escFL.writeMicroseconds(kMinPulseWidth);
     escBR.writeMicroseconds(kMinPulseWidth);
     escBL.writeMicroseconds(kMinPulseWidth);
+    yaw_error_sum_ = 0;
+    attitude_error_sum_ = 0;
+    bank_error_sum_ = 0;
     last_frame_ = micros();
     return;
   }
