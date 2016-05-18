@@ -13,7 +13,8 @@ struct ControllerCommands {
   float attitude = 0;  //in degrees
   float bank = 0;      //in degrees
   float throttle = 0;  //in % of full throttle
-  float aggressiveness = 0; // in between 0 and 1
+  float kp_adj = 0; // in between 0 and 1
+  float ki_adj = 0;
   bool hold_altitude = false;
 };
 
@@ -32,13 +33,13 @@ class Controller {
   const static float kP_yaw = 0;
   const static float kI_yaw = 0;
 
-  const static float kP_attitude = 0.0025;
-  const static float kI_attitude = 0.0025;
-  const static float kD_attitude = 0;
+  const static float kP_attitude = 0.01;
+  const static float kI_attitude = 0.0;
+  const static float kD_attitude = 0.004;
 
-  const static float kP_bank = 0.0010;
-  const static float kI_bank = 0.0010;
-  const static float kD_bank = 0;
+  const static float kP_bank = 0.008;
+  const static float kI_bank = 0.0;
+  const static float kD_bank = 0.004;
 
   const static float kP_altitude = 0;
 
@@ -65,6 +66,17 @@ class Controller {
   uint32_t this_frame_ = 0;
   uint32_t last_frame_ = 0;
 
+  float attitude_error_diff= 0;
+  float bank_error_diff = 0;
+
+  const static int hist_amt = 16;
+  int history_index = 0;
+  float aed_history[hist_amt];
+  float bed_history[hist_amt];
+  float aed_history_sum = 0;
+  float bed_history_sum = 0;
+
+
   // Commands
   ControllerCommands commands_;
   ControllerCommands last_commands_;
@@ -73,8 +85,8 @@ class Controller {
   Imu* imu_;
 
   // ESC connection constants
-  int escFRPin = 8;
-  int escFLPin = 9;
+  int escFRPin = 9;
+  int escFLPin = 8;
   int escBRPin = 10;
   int escBLPin = 11;
   Servo escFR;

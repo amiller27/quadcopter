@@ -11,6 +11,11 @@ Controller::Controller(Imu* imu) : imu_(imu) {
   escBR.attach(escBRPin, kMinPulseWidth, kMaxPulseWidth);
   escBL.attach(escBLPin, kMinPulseWidth, kMaxPulseWidth);
 
+  for (int i=0; i<hist_amt; i++) {
+    aed_history[i] = 0;
+    bed_history[i] = 0;
+  }
+
   this_frame_ = 0;
   last_frame_ = 0;
 }
@@ -20,7 +25,8 @@ void Controller::SetCommands(ControllerCommands& commands) {
   commands_.attitude = commands.attitude;
   commands_.bank = commands.bank;
   commands_.throttle = commands.throttle;
-  commands_.aggressiveness = commands.aggressiveness;
+  commands_.kp_adj = commands.kp_adj;
+  commands_.ki_adj = commands.ki_adj;
 }
 
 void Controller::Update() {
@@ -62,10 +68,26 @@ void Controller::Update() {
   bank_error_sum_ = constrain(bank_error_sum_, -kMaxBankITerm, kMaxBankITerm);
 
   // calculate error derivative
-  float attitude_error_diff = ((current_error.attitude - attitude_error_last_)
+  float old_aed = attitude_error_diff;
+  float old_bed = bank_error_diff;
+
+  attitude_error_diff = ((current_error.attitude - attitude_error_last_)
                                + (commands_.attitude - last_commands_.attitude)) / dt_;
-  float bank_error_diff = ((current_error.bank - bank_error_last_)
+  aed_history_sum -= aed_history[history_index];
+  aed_history[history_index] = attitude_error_diff;
+  aed_history_sum += attitude_error_diff;
+  attitude_error_diff = aed_history_sum / hist_amt;
+
+  bank_error_diff = ((current_error.bank - bank_error_last_)
                            + (commands_.bank - last_commands_.bank)) / dt_;
+  bed_history_sum -= bed_history[history_index];
+  bed_history[history_index] = bank_error_diff;
+  bed_history_sum += bank_error_diff;
+  bank_error_diff = bed_history_sum / hist_amt;
+
+  history_index++;
+  history_index %= hist_amt;
+
   attitude_error_last_ = current_error.attitude;
   bank_error_last_ = current_error.bank;
 
@@ -88,12 +110,13 @@ void Controller::Update() {
   //determind quad adjustments (in % throttle)
   float y_adj = kP_yaw * current_yaw_error
               + kI_yaw * yaw_error_sum_;
-  float a_adj = commands_.aggressiveness * kP_attitude * current_error.attitude
+  y_adj=0; //remove this later
+  float a_adj = commands_.kp_adj * kP_attitude * current_error.attitude
               + kI_attitude * attitude_error_sum_
-              - kD_attitude * attitude_error_diff;
-  float b_adj = commands_.aggressiveness * kP_bank * current_error.bank
+              + kD_attitude * commands_.ki_adj * attitude_error_diff;
+  float b_adj = commands_.kp_adj * kP_bank * current_error.bank
               + kI_bank * bank_error_sum_
-              - kD_bank * bank_error_diff;
+              + kD_bank * commands_.ki_adj * bank_error_diff;
 
 #ifdef DEBUG_PID
   {
@@ -128,7 +151,7 @@ void Controller::Update() {
   {
     static int i = 0;
     i++;
-    if (i == 50) {
+    if (i == 20) {
       printed = true;
       Serial.print(F("FR:  "));
       Serial.print(escFRVal);

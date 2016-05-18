@@ -14,16 +14,17 @@ void RadioController::Update() {
   last_time_ = current_time;
 
   output_commands_.yaw = 2*(commands_.yaw - 0.5) * dt *
-                         commands_.aggressiveness * kMaxHeadingChange;
-  output_commands_.attitude = 2*(commands_.attitude - 0.5) * commands_.aggressiveness *
+                         /*commands_.aggressiveness **/ kMaxHeadingChange;
+  output_commands_.attitude = 2*(commands_.attitude - 0.5) * /*commands_.aggressiveness * */
                            kMaxPitchRollAngle;
-  output_commands_.bank = 2*(commands_.bank - 0.5) * commands_.aggressiveness * 
+  output_commands_.bank = 2*(commands_.bank - 0.5) * /*commands_.aggressiveness * */
                        kMaxPitchRollAngle;
   if (commands_.throttle <= Controller::kZeroThrottleThreshold) {
     throttle_hit_zero_ = true;
   }
 
-  output_commands_.aggressiveness = commands_.aggressiveness;
+  output_commands_.kp_adj = commands_.kp_adj;
+  output_commands_.ki_adj = commands_.ki_adj;
 
   if (throttle_hit_zero_) {
     output_commands_.throttle = commands_.throttle;
@@ -37,8 +38,10 @@ void RadioController::Update() {
     i++;
     if (i == 50) {
       printed = true;
-      Serial.print(F("agg: "));
-      Serial.print(commands_.aggressiveness, 10);
+      Serial.print(F("kp: "));
+      Serial.print(commands_.kp_adj, 10);
+      Serial.print(F("ki: "));
+      Serial.print(commands_.ki_adj, 10);
       Serial.print(F("\tthr: "));
       Serial.print(commands_.throttle, 10);
       Serial.print(F("\tyaw: "));

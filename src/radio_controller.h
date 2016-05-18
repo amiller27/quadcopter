@@ -21,7 +21,7 @@ class RadioController {
   bool throttle_hit_zero_ = false;
 
   // Extreme Pitch and Roll angles at 100% aggressiveness
-  const int kMaxPitchRollAngle = 45;  //in deg
+  const int kMaxPitchRollAngle = 30;  //in deg
   const int kMaxHeadingChange = 180;   //in deg/s
 };
 

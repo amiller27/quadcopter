@@ -16,7 +16,8 @@ struct RcCommands {
   float attitude = 0;
   float bank = 0;
   float throttle = 0;
-  float aggressiveness = 0;
+  float kp_adj = 0;
+  float ki_adj = 0;
 };
 
 class RcReceiver {
@@ -36,9 +37,9 @@ class RcReceiver {
     attitude = 1,
     throttle = 2,
     yaw = 3,
-    mode = 4,
-    aggressiveness = 5,
-    unmapped2 = 6,
+    kp_adj  = 4,
+    ki_adj  = 5,
+    mode = 6,
     unmapped3 = 7
   };
 

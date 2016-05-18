@@ -79,7 +79,8 @@ void RcReceiver::GetCommands(RcCommands& out) {
   out.bank = mapf(inputs_[bank], kMinPulseLength, kMaxPulseLength, 0, 1);
   out.yaw = mapf(inputs_[yaw], kMinPulseLength, kMaxPulseLength, 0, 1);
   out.throttle = mapf(inputs_[throttle], kMinPulseLength, kMaxPulseLength, 0, 1);
-  out.aggressiveness = mapf(inputs_[aggressiveness], kMinPulseLength, kMaxPulseLength, 0, 1);
+  out.kp_adj = mapf(inputs_[kp_adj], kMinPulseLength, kMaxPulseLength, 0, 1);
+  out.ki_adj = mapf(inputs_[ki_adj], kMinPulseLength, kMaxPulseLength, 0, 1);
 }
 
 void RcReceiver::Interrupt(int channel) {
